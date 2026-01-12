@@ -13,7 +13,8 @@ export const AuthProvider = ({ children }) => {
   const fetchCurrentUser = async () => {
     try {
       const res = await api.get("/auth/me");
-      setUser(res.data.user);
+      // Access: axios response -> backend success wrapper -> user object
+      setUser(res.data.data.user);
     } catch {
       setUser(null);
     } finally {
@@ -23,7 +24,9 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     const res = await api.post("/auth/login", credentials);
-    setUser(res.data.user);
+    // Aligning with the new backend controller structure
+    const userData = res.data.data.user;
+    setUser(userData);
     return res.data;
   };
 
@@ -38,7 +41,7 @@ export const AuthProvider = ({ children }) => {
   const refreshUser = async () => {
     try {
       const res = await api.get("/auth/me");
-      setUser(res.data.user);
+      setUser(res.data.data.user);
     } catch {
       setUser(null);
     }
@@ -72,3 +75,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthContext;
