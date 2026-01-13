@@ -2,10 +2,14 @@ import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
+// REMOVED: Hooks called outside the component were causing the crash
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+
+  // Hooks must be inside the function component
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -17,7 +21,10 @@ const Login = () => {
     e.preventDefault();
     setError("");
     try {
-      await login({ email, password });
+      const res = await login({ email, password });
+
+      // If the user is logged in but not verified, the ProtectedRoute
+      // will catch them and send them to /verify-email
       navigate(from, { replace: true });
     } catch (err) {
       setError(

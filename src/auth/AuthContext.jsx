@@ -22,13 +22,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const login = async (credentials) => {
-    const res = await api.post("/auth/login", credentials);
-    // Aligning with the new backend controller structure
-    const userData = res.data.data.user;
-    setUser(userData);
-    return res.data;
-  };
+const login = async (credentials) => {
+  const res = await api.post("/auth/login", credentials);
+  const userData = res.data.data.user;
+  setUser(userData);
+  return res.data;
+};
 
   const logout = async () => {
     try {

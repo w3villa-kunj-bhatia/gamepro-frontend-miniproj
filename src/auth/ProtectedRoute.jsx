@@ -1,33 +1,23 @@
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom"; // Added Outlet here
 import { useAuth } from "./AuthContext";
-import Loader from "../components/Loader";
 
-const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, isAuthenticated, isAdmin, loading } = useAuth();
-  const location = useLocation();
+const ProtectedRoute = () => {
+  const { user, loading } = useAuth();
 
-  // Still checking auth (initial load / refresh)
-  if (loading) {
-    return <Loader />;
+  if (loading) return <div>Loading...</div>;
+
+  // If no user is logged in, redirect to login page
+  if (!user) {
+    return <Navigate to="/login" replace />;
   }
 
-  // Not logged in
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  // Logged in but email not verified
-  if (!user?.isEmailVerified) {
+  // If user exists but email is not verified, redirect to verification page
+  if (!user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
 
-  // Admin-only route protection
-  if (adminOnly && !isAdmin) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  // All checks passed
-  return children;
+  // Render child routes if authenticated and verified
+  return <Outlet />; // This will now work correctly
 };
 
 export default ProtectedRoute;
