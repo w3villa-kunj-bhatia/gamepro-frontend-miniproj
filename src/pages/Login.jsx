@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
+import Dashboard from "./Dashboard";
 
 // REMOVED: Hooks called outside the component were causing the crash
 
@@ -14,18 +15,15 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Redirect back to the page they tried to visit, or dashboard
   const from = location.state?.from?.pathname || "/dashboard";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      const res = await login({ email, password });
+      await login({ email, password }); //
 
-      // If the user is logged in but not verified, the ProtectedRoute
-      // will catch them and send them to /verify-email
-      navigate(from, { replace: true });
+      navigate("/dashboard", { replace: true }); //
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -45,20 +43,26 @@ const Login = () => {
         </h2>
         {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
         <input
+          id="email" // Add this
+          name="email" // Add this
           type="email"
           placeholder="Email"
           className="w-full p-2 mb-4 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          autoComplete="email"
         />
         <input
+          id="password" // Add this
+          name="password" // Add this
           type="password"
           placeholder="Password"
           className="w-full p-2 mb-4 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
         <button
           type="submit"

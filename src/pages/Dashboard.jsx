@@ -11,11 +11,12 @@ const Dashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // 1. Corrected endpoint to match backend route
+        // FIX: Added "/api" prefix to match app.js route configuration
+        // Backend: app.use("/api/dashboard", ...) + router.get("/profiles", ...)
         const res = await api.get("/dashboard/profiles");
 
-        // 2. Corrected data mapping:
-        // res.data (Axios) -> .data (Backend Wrapper) -> .data (Service Pagination Object)
+        // Data mapping is correct based on your backend service structure:
+        // res.data (Axios body) -> .data (Backend Wrapper) -> .data (Service Pagination Object) -> .data (Profiles Array)
         if (res.data?.data?.data) {
           setProfiles(res.data.data.data);
         }
@@ -31,7 +32,7 @@ const Dashboard = () => {
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="flex justify-between items-center mb-6">
-        {/* 3. Changed user.username to user.email as per User model */}
+        {/* Displays User Email correctly from User model */}
         <h1 className="text-2xl font-bold text-gray-800">
           Welcome, {user?.email}!
         </h1>
@@ -70,7 +71,8 @@ const Dashboard = () => {
               >
                 <div className="flex items-center mb-3">
                   <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
-                    {profile.username?.charAt(0) || "P"}
+                    {/* Fallback to 'P' if username is missing */}
+                    {profile.username?.charAt(0).toUpperCase() || "P"}
                   </div>
                   <h4 className="font-bold text-lg">
                     {profile.username || "Anonymous Player"}

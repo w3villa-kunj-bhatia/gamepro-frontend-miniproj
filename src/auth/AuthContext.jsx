@@ -13,7 +13,6 @@ export const AuthProvider = ({ children }) => {
   const fetchCurrentUser = async () => {
     try {
       const res = await api.get("/auth/me");
-      // Access: axios response -> backend success wrapper -> user object
       setUser(res.data.data.user);
     } catch {
       setUser(null);
@@ -22,12 +21,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-const login = async (credentials) => {
-  const res = await api.post("/auth/login", credentials);
-  const userData = res.data.data.user;
-  setUser(userData);
-  return res.data;
-};
+  const login = async (credentials) => {
+    try {
+      const res = await api.post("/auth/login", credentials);
+      if (res.data.success) {
+        setUser(res.data.data.user);
+        return res.data; // This ensures the 'await' in Login.jsx resolves
+      }
+    } catch (err) {
+      setUser(null);
+      throw err; // This ensures the 'catch' in Login.jsx triggers
+    }
+  };
 
   const logout = async () => {
     try {
@@ -75,4 +80,4 @@ export const useAuth = () => {
   return context;
 };
 
-export default AuthContext;
+export { AuthContext };

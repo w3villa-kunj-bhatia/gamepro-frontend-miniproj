@@ -1,4 +1,4 @@
-const Dashboard = () => {
+const AdminDashboard = () => {
   return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-sm text-gray-600">AdminDash</div>
@@ -6,4 +6,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default AdminDashboard;

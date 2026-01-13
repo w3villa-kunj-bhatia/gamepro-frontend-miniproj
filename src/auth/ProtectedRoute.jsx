@@ -1,23 +1,38 @@
-import { Navigate, Outlet } from "react-router-dom"; // Added Outlet here
+import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
+// import AdminDashboard from "../pages/admin/AdminDashboard";
 
-const ProtectedRoute = () => {
+// 1. Accept 'children' and 'adminOnly' from props
+const ProtectedRoute = ({ children, adminOnly }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    // You can replace this with your Loader component if you like
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        Loading...
+      </div>
+    );
+  }
 
-  // If no user is logged in, redirect to login page
+  // 2. Not Logged In -> Redirect to Login
   if (!user) {
     return <Navigate to="/login" replace />;
   }
 
-  // If user exists but email is not verified, redirect to verification page
+  // 3. Logged In but Email Not Verified -> Redirect to Verify
   if (!user.isVerified) {
     return <Navigate to="/verify-email" replace />;
   }
 
-  // Render child routes if authenticated and verified
-  return <Outlet />; // This will now work correctly
+  // 4. Admin Route Guard -> If route is adminOnly but user is NOT admin
+  if (adminOnly && user.role !== "admin") {
+    // Redirect standard users away from admin pages
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // 5. Render the actual component (Dashboard, Profile, etc.)
+  return children;
 };
 
 export default ProtectedRoute;
