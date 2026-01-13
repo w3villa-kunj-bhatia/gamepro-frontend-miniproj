@@ -1,34 +1,39 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import Dashboard from "./Dashboard";
-
-// REMOVED: Hooks called outside the component were causing the crash
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Hooks must be inside the function component
-  const { login } = useAuth();
+  const { login } = useAuth(); // Use login from context
   const navigate = useNavigate();
   const location = useLocation();
-
-  const from = location.state?.from?.pathname || "/dashboard";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     try {
-      await login({ email, password }); //
+      // Call context login which updates global user state
+      const userData = await login(email, password);
 
-      navigate("/dashboard", { replace: true }); //
+      // Redirect based on role retrieved from DB
+      if (userData.role === "admin") {
+        navigate("/admin");
+      } else {
+        const from = location.state?.from?.pathname || "/dashboard";
+        navigate(from);
+      }
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          "Login failed. Please check your credentials."
-      );
+      // Handle the 401 Unauthorized specifically
+      if (err.response?.status === 401) {
+        setError("Invalid email or password.");
+      } else if (err.response?.status === 403) {
+        setError("Please verify your email before logging in.");
+      } else {
+        setError("Something went wrong. Please try again later.");
+      }
     }
   };
 
@@ -38,31 +43,28 @@ const Login = () => {
         onSubmit={handleSubmit}
         className="p-8 bg-white shadow-md rounded-lg w-96"
       >
-        <h2 className="mb-6 text-2xl font-bold text-center">
-          Login to GamePro
-        </h2>
-        {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+        <h2 className="mb-6 text-2xl font-bold text-center">Login</h2>
+        {error && (
+          <p className="mb-4 text-sm text-red-500 text-center font-semibold">
+            {error}
+          </p>
+        )}
+
         <input
-          id="email" // Add this
-          name="email" // Add this
           type="email"
           placeholder="Email"
           className="w-full p-2 mb-4 border rounded"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          autoComplete="email"
         />
         <input
-          id="password" // Add this
-          name="password" // Add this
           type="password"
           placeholder="Password"
           className="w-full p-2 mb-4 border rounded"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          autoComplete="current-password"
         />
         <button
           type="submit"

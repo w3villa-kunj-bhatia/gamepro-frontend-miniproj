@@ -1,83 +1,52 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import api from "../api/axios";
+import { createContext, useContext, useState, useEffect } from "react";
+import axios from "../api/axios";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const isAuthenticated = !!user;
-  const isAdmin = user?.role === "admin";
-
-  const fetchCurrentUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.data.data.user);
-    } catch {
-      setUser(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const login = async (credentials) => {
-    try {
-      const res = await api.post("/auth/login", credentials);
-      if (res.data.success) {
+  // Check if user is logged in on mount
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await axios.get("/auth/me");
         setUser(res.data.data.user);
-        return res.data; // This ensures the 'await' in Login.jsx resolves
+      } catch (err) {
+        setUser(null);
+      } finally {
+        setLoading(false);
       }
+    };
+    checkUser();
+  }, []);
+
+  const login = async (email, password) => {
+    try {
+      // Backend expects email and password in body
+      const res = await axios.post("/auth/login", { email, password });
+
+      // Accessing data through the success utility structure: data.data.user
+      const userData = res.data.data.user;
+      setUser(userData);
+      return userData;
     } catch (err) {
-      setUser(null);
-      throw err; // This ensures the 'catch' in Login.jsx triggers
+      // Throw error to be caught by the Login.jsx component
+      throw err;
     }
   };
 
   const logout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } finally {
-      setUser(null);
-    }
+    await axios.post("/auth/logout");
+    setUser(null);
   };
-
-  const refreshUser = async () => {
-    try {
-      const res = await api.get("/auth/me");
-      setUser(res.data.data.user);
-    } catch {
-      setUser(null);
-    }
-  };
-
-  useEffect(() => {
-    fetchCurrentUser();
-  }, []);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        loading,
-        isAuthenticated,
-        isAdmin,
-        login,
-        logout,
-        refreshUser,
-      }}
-    >
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
-
-export { AuthContext };
+export const useAuth = () => useContext(AuthContext);
