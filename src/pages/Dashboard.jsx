@@ -65,9 +65,17 @@ const Dashboard = () => {
                 className="p-5 bg-white shadow-sm rounded-lg border border-gray-200 hover:shadow-md transition"
               >
                 <div className="flex items-center mb-3">
-                  <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
-                    {profile.username?.charAt(0).toUpperCase() || "P"}
-                  </div>
+                  {profile.avatar ? (
+                    <img
+                      src={profile.avatar}
+                      alt={profile.username}
+                      className="h-10 w-10 rounded-full object-cover mr-3 border border-gray-200"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold mr-3">
+                      {profile.username?.charAt(0).toUpperCase() || "P"}
+                    </div>
+                  )}
                   <h4 className="font-bold text-lg">
                     {profile.username || "Anonymous Player"}
                   </h4>
