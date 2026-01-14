@@ -25,10 +25,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const res = await axios.post("/auth/login", { email, password });
-
       const userData = res.data.data.user;
       setUser(userData);
-      return userData;
+      return userData; // Critical: Return user data for redirection logic in Login.jsx
     } catch (err) {
       throw err;
     }

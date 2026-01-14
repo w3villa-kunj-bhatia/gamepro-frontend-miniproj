@@ -11,13 +11,26 @@ import Plans from "../pages/Plans";
 import AdminDashboard from "../pages/admin/AdminDashboard";
 import Users from "../pages/admin/Users";
 
+import LandingPage from "../pages/LandingPage";
+import CreateProfile from "../pages/CreateProfile";
+
 const AppRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/login" replace />} />
+      <Route path="/" element={<LandingPage />} />
+
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+
+      <Route
+        path="/create-profile"
+        element={
+          <ProtectedRoute>
+            <CreateProfile />
+          </ProtectedRoute>
+        }
+      />
 
       <Route
         path="/dashboard"

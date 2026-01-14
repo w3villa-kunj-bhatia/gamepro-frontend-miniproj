@@ -31,12 +31,7 @@ const Dashboard = () => {
         <h1 className="text-2xl font-bold text-gray-800">
           Welcome, {user?.email}!
         </h1>
-        <button
-          onClick={logout}
-          className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition"
-        >
-          Logout
-        </button>
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

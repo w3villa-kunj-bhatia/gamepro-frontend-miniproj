@@ -1,8 +1,10 @@
 import AppRoutes from "./routes/AppRoutes";
+import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen transition-colors duration-300">
+      <Navbar />
       <AppRoutes />
     </div>
   );
