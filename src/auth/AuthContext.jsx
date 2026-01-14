@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import axios from "../api/axios";
+import api from "../api/axios";
 
 const AuthContext = createContext();
 
@@ -34,8 +35,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
-    await axios.post("/auth/logout");
-    setUser(null);
+    try {
+      await api.post("/auth/logout");
+      setUser(null);
+    } catch (err) {
+      console.error("Logout failed", err);
+    }
   };
 
   return (
