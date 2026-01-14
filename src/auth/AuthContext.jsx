@@ -7,7 +7,6 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Check if user is logged in on mount
   useEffect(() => {
     const checkUser = async () => {
       try {
@@ -24,15 +23,12 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      // Backend expects email and password in body
       const res = await axios.post("/auth/login", { email, password });
 
-      // Accessing data through the success utility structure: data.data.user
       const userData = res.data.data.user;
       setUser(userData);
       return userData;
     } catch (err) {
-      // Throw error to be caught by the Login.jsx component
       throw err;
     }
   };

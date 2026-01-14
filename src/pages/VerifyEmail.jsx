@@ -20,16 +20,13 @@ const VerifyEmail = () => {
       }
 
       try {
-        // 1. Send the token to the backend
         await api.get(`/auth/verify-email?token=${token}`);
 
         setStatus("success");
         setMessage("Email verified successfully! Redirecting...");
 
-        // 2. Update the AuthContext state so the app knows we are verified
         await refreshUser();
 
-        // 3. Redirect to dashboard
         setTimeout(() => navigate("/dashboard"), 2000);
       } catch (err) {
         console.error("Verification error:", err);

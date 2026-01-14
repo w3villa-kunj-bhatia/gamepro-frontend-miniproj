@@ -8,12 +8,10 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
 
   if (loading) return <Loader />;
 
-  // Require login
   if (!user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  // Require Admin role for specific routes
   if (adminOnly && user.role !== "admin") {
     return <Navigate to="/dashboard" replace />;
   }

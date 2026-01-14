@@ -15,7 +15,6 @@ const AdminDashboard = () => {
             View, search, and filter all registered users.
           </p>
         </Link>
-        {/* Additional admin features can be added here */}
       </div>
     </div>
   );

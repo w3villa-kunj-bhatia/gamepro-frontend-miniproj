@@ -9,7 +9,6 @@ const Users = () => {
   const [planFilter, setPlanFilter] = useState("");
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
 
-  // Fetch users with query params
   const fetchUsers = async (page = 1) => {
     setLoading(true);
     try {
@@ -25,9 +24,8 @@ const Users = () => {
     }
   };
 
-  // Re-fetch on filter or search change
   useEffect(() => {
-    const timer = setTimeout(() => fetchUsers(1), 300); // Debounce search
+    const timer = setTimeout(() => fetchUsers(1), 300);
     return () => clearTimeout(timer);
   }, [search, planFilter]);
 
@@ -37,7 +35,6 @@ const Users = () => {
         <h1 className="text-2xl font-bold">Manage Users</h1>
       </div>
 
-      {/* Search and Filters */}
       <div className="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded shadow-sm">
         <input
           type="text"
@@ -62,7 +59,6 @@ const Users = () => {
         <Loader />
       ) : (
         <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* User List Table */}
           <table className="w-full text-left">
             <thead className="bg-gray-50 border-b">
               <tr>
@@ -109,7 +105,6 @@ const Users = () => {
             </tbody>
           </table>
 
-          {/* Pagination Controls */}
           <div className="p-4 bg-gray-50 flex justify-center items-center gap-2">
             <button
               disabled={pagination.page === 1}

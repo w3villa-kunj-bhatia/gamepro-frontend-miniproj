@@ -1,7 +1,6 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "../auth/ProtectedRoute";
 
-// Pages
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
 import VerifyEmail from "../pages/VerifyEmail";
@@ -20,7 +19,6 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
 
-      {/* User Protected Routes */}
       <Route
         path="/dashboard"
         element={
@@ -54,7 +52,6 @@ const AppRoutes = () => {
         }
       />
 
-      {/* Admin Protected Routes */}
       <Route
         path="/admin"
         element={
