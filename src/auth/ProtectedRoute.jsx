@@ -5,7 +5,7 @@ import api from "../api/axios";
 import Loader from "../components/Loader";
 
 const ProtectedRoute = ({ children, adminOnly = false }) => {
-  const { user, loading: authLoading } = useAuth(); // Loading from AuthContext
+  const { user, loading: authLoading } = useAuth(); 
   const [profileLoading, setProfileLoading] = useState(true);
   const [hasProfile, setHasProfile] = useState(null);
   const location = useLocation();

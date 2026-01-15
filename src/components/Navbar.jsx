@@ -1,16 +1,14 @@
-import { Link, useLocation } from "react-router-dom"; // Added useLocation
+import { Link, useLocation } from "react-router-dom"; 
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../auth/AuthContext";
 
 const Navbar = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { user, logout, loading } = useAuth();
-  const location = useLocation(); // Hook to get current route
+  const location = useLocation();
 
-  // Define paths where the Navbar should be hidden
   const hideNavbarPaths = ["/login", "/signup"];
 
-  // Return null if currently on login/signup or if authentication is loading
   if (loading || hideNavbarPaths.includes(location.pathname)) {
     return null;
   }
@@ -38,7 +36,6 @@ const Navbar = () => {
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Theme Toggle */}
         <button
           onClick={toggleTheme}
           className="p-2 rounded-xl bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-yellow-400 transition-all"

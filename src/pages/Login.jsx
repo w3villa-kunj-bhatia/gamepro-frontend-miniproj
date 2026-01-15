@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
-import api from "../api/axios"; // Added api import for profile check
+import api from "../api/axios";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false); // Added loading state
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -19,26 +19,20 @@ const Login = () => {
     setLoading(true);
 
     try {
-      // 1. Authenticate user
       const userData = await login(email, password);
 
-      // 2. Determine redirection route
       if (userData.role === "admin") {
         navigate("/admin");
       } else {
         try {
-          // 3. Check if operative profile exists
           await api.get("/profile/me");
 
-          // If profile exists, go to intended location or dashboard
           const from = location.state?.from?.pathname || "/dashboard";
           navigate(from);
         } catch (err) {
-          // 4. If profile doesn't exist (404), route to creation page
           if (err.response?.status === 404) {
             navigate("/create-profile");
           } else {
-            // Fallback for other errors (network, etc.)
             navigate("/dashboard");
           }
         }

@@ -11,13 +11,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUser = async () => {
       try {
-        // Matches the endpoint in auth.routes.js: router.get("/me", auth, authController.getMe);
         const res = await axios.get("/auth/me");
         setUser(res.data.data.user);
       } catch (err) {
         setUser(null);
       } finally {
-        // Ensure loading is set to false only after the request completes
         setLoading(false);
       }
     };

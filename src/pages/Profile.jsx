@@ -9,7 +9,6 @@ const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Local mirror of src/config/plans.js from backend
   const plansConfig = {
     free: { games: 3, savedProfiles: 3 },
     silver: { games: 5, savedProfiles: 5 },
@@ -61,7 +60,6 @@ const Profile = () => {
   return (
     <div className="h-screen w-full bg-slate-950 text-white p-6 pt-20 overflow-hidden flex flex-col transition-colors duration-500">
       <div className="max-w-7xl mx-auto w-full h-full grid grid-cols-1 md:grid-cols-[280px_1fr_280px] md:grid-rows-[160px_1fr_180px] gap-4">
-        {/* Profile Identity Column */}
         <div className="md:row-span-3 bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col items-center justify-between shadow-xl">
           <div className="text-center w-full">
             <div className="relative inline-block">
@@ -96,7 +94,6 @@ const Profile = () => {
           </Link>
         </div>
 
-        {/* Top Games with Plan-Based Locking */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 overflow-hidden relative">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-3">
             Top Games ({profile?.games?.length || 0} / {limits.games})
@@ -130,7 +127,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Dynamic Membership Badge */}
         <div
           className={`${theme.bgColor} ${theme.borderColor} border rounded-3xl p-4 flex flex-col items-center justify-center transition-all duration-500 group`}
         >
@@ -144,7 +140,6 @@ const Profile = () => {
           </span>
         </div>
 
-        {/* Saved Profiles with Logic-Based Placeholders */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 overflow-hidden">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
             Saved Profiles ({limits.savedProfiles} Slots)
@@ -167,7 +162,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Top Characters Section */}
         <div className="md:row-span-2 bg-slate-900 border border-slate-800 rounded-3xl p-6 overflow-hidden flex flex-col">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
             Top Characters
@@ -197,7 +191,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* System Message / Transmission */}
         <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 relative overflow-hidden group">
           <div
             className={`absolute top-0 left-0 w-1 h-full ${theme.iconBg} opacity-50`}

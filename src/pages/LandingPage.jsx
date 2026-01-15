@@ -7,9 +7,7 @@ const LandingPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300">
 
-      {/* Main Content Area */}
       <main className="flex-grow pt-12 pb-24">
-        {/* Hero Section */}
         <header className="max-w-7xl mx-auto px-6 py-20 text-center">
           <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 dark:text-white mb-8 tracking-tight">
             The Ultimate Platform for{" "}
@@ -33,14 +31,12 @@ const LandingPage = () => {
           </div>
         </header>
 
-        {/* Features Section - Updated with dark:bg-slate-900 */}
         <section className="bg-white dark:bg-slate-950  py-20 transition-colors duration-300">
           <div className="max-w-7xl mx-auto px-6">
             <h2 className="text-3xl font-bold text-center mb-12 dark:text-white">
               Why Choose GamePro?
             </h2>
             <div className="grid md:grid-cols-3 gap-8">
-              {/* Feature Cards updated for Dark Mode */}
               <div className="p-8 bg-gray-50 dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700">
                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-lg flex items-center justify-center mb-4">
                   <svg
@@ -120,7 +116,6 @@ const LandingPage = () => {
         </section>
       </main>
 
-      {/* Footer - Positioned naturally at the end of flex column */}
       <footer className="bg-gray-900 dark:bg-black text-white py-12 px-6">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
           <div className="text-2xl font-bold mb-4 md:mb-0">GamePro</div>

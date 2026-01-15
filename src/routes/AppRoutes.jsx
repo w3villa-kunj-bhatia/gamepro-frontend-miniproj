@@ -40,10 +40,10 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route
+<Route
         path="/profile"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute key="profile">
             <Profile />
           </ProtectedRoute>
         }

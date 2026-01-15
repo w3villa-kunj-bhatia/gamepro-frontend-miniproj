@@ -10,6 +10,7 @@ const CreateProfile = () => {
     avatar: "",
     games: [],
     topCharacters: [],
+    coordinates: { lat: 0, lng: 0 },
   });
 
   const [gameSearch, setGameSearch] = useState("");
@@ -20,7 +21,6 @@ const CreateProfile = () => {
   const [saving, setSaving] = useState(false);
   const navigate = useNavigate();
 
-  // Load existing profile data for editing
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -37,7 +37,6 @@ const CreateProfile = () => {
     fetchProfile();
   }, []);
 
-  // Debounced Game Search
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (gameSearch.length > 2) {
@@ -52,7 +51,6 @@ const CreateProfile = () => {
     return () => clearTimeout(timer);
   }, [gameSearch]);
 
-  // Debounced Character Search
   useEffect(() => {
     const timer = setTimeout(async () => {
       if (charSearch.length > 2) {
@@ -110,10 +108,19 @@ const CreateProfile = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.post("/profile", formData);
-      navigate("/profile");
+      console.log("Sending profile data...", formData);
+      const res = await api.post("/profile", formData);
+
+      if (res.status === 200 || res.status === 201) {
+        navigate("/profile");
+      }
     } catch (err) {
-      console.error("Save failed:", err);
+      alert(
+        `Error: ${
+          err.response?.data?.message ||
+          "Failed to save profile. Check console."
+        }`
+      );
     } finally {
       setSaving(false);
     }
@@ -131,7 +138,6 @@ const CreateProfile = () => {
           Complete Your Operative Profile
         </h2>
 
-        {/* IDENTITY SECTION */}
         <div className="space-y-4">
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
             Identity & Location
@@ -163,7 +169,6 @@ const CreateProfile = () => {
           />
         </div>
 
-        {/* GAME SEARCH SECTION */}
         <div className="space-y-4 relative">
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
             Deploy Arsenal (Games)
@@ -212,7 +217,6 @@ const CreateProfile = () => {
           </div>
         </div>
 
-        {/* CHARACTER SEARCH SECTION */}
         <div className="col-span-full space-y-4 relative">
           <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em]">
             Select Top Characters
