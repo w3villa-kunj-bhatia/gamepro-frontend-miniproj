@@ -11,11 +11,13 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const checkUser = async () => {
       try {
+        // Matches the endpoint in auth.routes.js: router.get("/me", auth, authController.getMe);
         const res = await axios.get("/auth/me");
         setUser(res.data.data.user);
       } catch (err) {
         setUser(null);
       } finally {
+        // Ensure loading is set to false only after the request completes
         setLoading(false);
       }
     };
@@ -27,7 +29,7 @@ export const AuthProvider = ({ children }) => {
       const res = await axios.post("/auth/login", { email, password });
       const userData = res.data.data.user;
       setUser(userData);
-      return userData; // Critical: Return user data for redirection logic in Login.jsx
+      return userData;
     } catch (err) {
       throw err;
     }
@@ -44,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={{ user, login, logout, loading }}>
-      {children}
+      {!loading ? children : null}
     </AuthContext.Provider>
   );
 };

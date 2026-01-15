@@ -49,8 +49,8 @@ const Navbar = () => {
         {user ? (
           <div className="flex items-center space-x-3">
             <Link to="/profile" className="flex items-center space-x-2 group">
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-200 group-hover:text-blue-600 transition-colors">
-                {user.name || user.email?.split("@")[0] || "User"}
+              <span className="text-white font-bold">
+                {user?.username || user?.email?.split("@")[0] || "User"}
               </span>
               <img
                 src={
