@@ -7,6 +7,7 @@ import { useAuth } from "../auth/AuthContext";
 const Profile = () => {
   const { user: authUser } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const plansConfig = {
@@ -16,11 +17,24 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    api
-      .get("/profile/me")
-      .then((res) => setProfile(res.data.data))
-      .catch((err) => console.error("Profile fetch error:", err))
-      .finally(() => setLoading(false));
+    const fetchProfileData = async () => {
+      try {
+        setLoading(true);
+        const [profileRes, savedRes] = await Promise.all([
+          api.get("/profile/me"),
+          api.get("/saved-profiles"),
+        ]);
+
+        setProfile(profileRes.data.data);
+        setSavedProfiles(savedRes.data.data || []);
+      } catch (err) {
+        console.error("Profile fetch error:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfileData();
   }, []);
 
   if (loading) return <Loader />;
@@ -96,7 +110,7 @@ const Profile = () => {
             </p>
             <Link
               to="/create-profile"
-              className="mt-auto w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg"
+              className="mt-auto w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg text-center"
             >
               Edit Identity
             </Link>
@@ -151,6 +165,13 @@ const Profile = () => {
                       }`}
                       alt={game.name}
                     />
+                    {!isLocked && (
+                      <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                        <span className="text-[10px] font-bold uppercase tracking-tighter leading-tight">
+                          {game.name}
+                        </span>
+                      </div>
+                    )}
                     {isLocked && (
                       <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                         <span className="text-2xl drop-shadow-lg">🔒</span>
@@ -185,34 +206,64 @@ const Profile = () => {
             <span className={`${theme.textColor} font-bold`}>
               {currentPlan.toUpperCase()}
             </span>
-            .
+            .{" "}
             {profile?.games?.length > 0
-              ? " Data nodes active."
-              : " Awaiting input."}
+              ? "Data nodes active."
+              : "Awaiting input."}
           </p>
         </div>
 
         <div className="md:col-span-1 lg:col-span-1 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
-            Network ({limits.savedProfiles})
+            Network ({savedProfiles.length} / {limits.savedProfiles})
           </span>
           <div className="grid grid-cols-2 gap-3">
-            {[...Array(4)].map((_, i) => (
+            {savedProfiles.slice(0, 4).map((item) => (
               <div
-                key={i}
-                className={`aspect-square rounded-2xl border-2 border-dashed flex items-center justify-center ${
-                  i >= limits.savedProfiles
-                    ? "bg-black/20 border-slate-800/50"
-                    : "bg-slate-800/30 border-slate-700 hover:border-indigo-500"
-                }`}
+                key={item._id}
+                className="relative group aspect-square rounded-2xl overflow-hidden border-2 border-slate-700 hover:border-indigo-500 transition-all"
               >
-                {i >= limits.savedProfiles ? (
-                  <span className="text-slate-700">🔒</span>
-                ) : (
-                  <span className="text-slate-600">+</span>
-                )}
+                <img
+                  src={
+                    item.profile?.avatar ||
+                    `https://ui-avatars.com/api/?name=${item.profile?.username}`
+                  }
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  alt={item.profile?.username}
+                />
+                <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full">
+                    {item.profile?.username}
+                  </span>
+                </div>
               </div>
             ))}
+
+            {[
+              ...Array(
+                Math.max(
+                  0,
+                  Math.min(4, limits.savedProfiles) - savedProfiles.length
+                )
+              ),
+            ].map((_, i) => (
+              <div
+                key={`empty-net-${i}`}
+                className="aspect-square rounded-2xl border-2 border-dashed border-slate-800 flex items-center justify-center bg-slate-800/30"
+              >
+                <span className="text-slate-600 text-xl">+</span>
+              </div>
+            ))}
+
+            {limits.savedProfiles < 4 &&
+              [...Array(4 - limits.savedProfiles)].map((_, i) => (
+                <div
+                  key={`locked-net-${i}`}
+                  className="aspect-square rounded-2xl border-2 border-dashed border-slate-800/50 flex items-center justify-center bg-black/20"
+                >
+                  <span className="text-slate-700">🔒</span>
+                </div>
+              ))}
           </div>
         </div>
 
@@ -225,11 +276,11 @@ const Profile = () => {
               profile.topCharacters.map((char, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 flex items-center gap-3 bg-slate-800/50 pr-4 pl-1 py-1 rounded-full border border-slate-700/50"
+                  className="flex-shrink-0 flex items-center gap-3 bg-slate-800/50 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 group transition-all"
                 >
                   <img
                     src={char.imageUrl}
-                    className="w-10 h-10 rounded-full border border-indigo-500/50 object-cover"
+                    className="w-10 h-10 rounded-full border border-indigo-500/50 object-cover group-hover:rotate-12 transition-transform"
                     alt={char.name}
                   />
                   <span className="text-xs font-bold uppercase tracking-tight text-slate-300 whitespace-nowrap">
