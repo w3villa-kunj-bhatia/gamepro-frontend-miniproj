@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom"; 
+import { Link, useLocation } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../auth/AuthContext";
 
@@ -16,7 +16,7 @@ const Navbar = () => {
   return (
     <nav
       className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between 
-                    w-max min-w-[450px] gap-8 px-6 py-3 
+                    w-max min-w-[650px] gap-8 px-6 py-3 
                     bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl 
                     border border-white/20 dark:border-slate-700/50 
                     rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
@@ -45,6 +45,15 @@ const Navbar = () => {
 
         {user ? (
           <div className="flex items-center space-x-3">
+            {/* --- ADDED DASHBOARD BUTTON HERE --- */}
+            <Link
+              to="/dashboard"
+              className="text-sm font-bold text-gray-600 dark:text-gray-300 hover:text-blue-600 transition-colors"
+            >
+              Dashboard
+            </Link>
+            {/* ----------------------------------- */}
+
             <Link to="/profile" className="flex items-center space-x-2 group">
               <span className="text-white font-bold">
                 {user?.username || user?.email?.split("@")[0] || "User"}
