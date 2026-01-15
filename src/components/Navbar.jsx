@@ -65,11 +65,23 @@ const Navbar = () => {
 
             <button
               onClick={logout}
-              className="text-xs font-medium text-red-500 hover:text-red-600 transition-colors ml-1"
+              className="text-red-500 hover:text-red-600 transition-colors ml-1 p-1 rounded-md"
               title="Logout"
             >
-              <span className="hidden sm:inline">Logout</span>
-              <span className="sm:hidden text-lg">✖</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-5 h-5" 
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6a2.25 2.25 0 0 0-2.25 2.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15m3 0 3-3m0 0-3-3m3 3H9"
+                />
+              </svg>
             </button>
           </div>
         ) : (
