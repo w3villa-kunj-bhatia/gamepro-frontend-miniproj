@@ -45,12 +45,38 @@ const Profile = () => {
 
     try {
       setIsDownloading(true);
+
+      await new Promise((resolve) => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: "#020617", // Keep dark bg for the PDF export specifically
+        scale: 3,
+        useCORS: true, 
+        allowTaint: true,
+        backgroundColor: "#020617",
         logging: false,
         ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
+        onclone: (clonedDoc) => {
+          const usernameEl = clonedDoc.querySelector("#profile-identity h2");
+          if (usernameEl) {
+            usernameEl.classList.remove("truncate");
+            usernameEl.style.whiteSpace = "normal";
+            usernameEl.style.height = "auto";
+          }
+
+          const profileCard = clonedDoc.querySelector(
+            "#profile-identity > div:first-child"
+          );
+          if (profileCard) {
+            profileCard.style.backgroundColor = "#0f172a"; 
+            profileCard.style.backdropFilter = "none";
+          }
+
+          const badgeEl = clonedDoc.querySelector(".absolute.bottom-2.right-2");
+          if (badgeEl) {
+            badgeEl.style.zIndex = "50";
+            badgeEl.style.opacity = "1";
+          }
+        },
       });
 
       const imgData = canvas.toDataURL("image/png");
@@ -107,14 +133,12 @@ const Profile = () => {
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   return (
-    // UPDATED: Added dark: prefixes and standard light mode colors
     <div className="min-h-screen w-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
       <div
         id="profile-identity"
         className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-min"
       >
-        {/* Profile Card */}
-        <div className="md:col-span-1 lg:row-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col items-center shadow-xl relative overflow-hidden group">
+        <div className="md:col-span-1 lg:row-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col items-center shadow-xl relative overflow-hidden group ">
           <div
             className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace(
               "/10",
@@ -148,7 +172,6 @@ const Profile = () => {
               System Level: {currentPlan}
             </p>
 
-            {/* Location Card */}
             <div className="mt-12 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">📍</span>
@@ -183,7 +206,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Membership Tier Card */}
         <div
           className={`md:col-span-2 lg:col-span-1 min-h-[160px] ${theme.bgColor} ${theme.borderColor} border rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]`}
         >
@@ -202,7 +224,6 @@ const Profile = () => {
           </p>
         </div>
 
-        {/* Favorite Games Card */}
         <div className="md:col-span-2 lg:col-span-2 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest">
@@ -253,12 +274,11 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* System Log / Info Bar */}
         <div className="md:col-span-3 lg:col-span-3 bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 relative overflow-hidden flex items-center min-h-[70px]">
           <div
             className={`absolute left-0 top-0 bottom-0 w-1 ${theme.iconBg} opacity-80`}
           />
-          <p className="text-xs font-mono text-gray-600 dark:text-slate-400 pl-4 leading-relaxed">
+          <p className="text-sm font-mono text-gray-600 dark:text-slate-400 pl-4 leading-relaxed">
             <span className="text-indigo-600 dark:text-indigo-400 font-bold">
               SYSTEM_LOG:
             </span>{" "}
@@ -273,7 +293,6 @@ const Profile = () => {
           </p>
         </div>
 
-        {/* Network / Saved Profiles */}
         <div className="md:col-span-1 lg:col-span-1 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6">
           <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
             {profile?.username}'s Network ({savedProfiles.length} /{" "}
@@ -303,7 +322,6 @@ const Profile = () => {
           </div>
         </div>
 
-        {/* Squadron / Characters */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
           <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
             {profile?.username}'s Squadron

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
 import Loader from "../components/Loader";
+import { useAuth } from "../auth/AuthContext"; 
 
 const CreateProfile = () => {
   const [formData, setFormData] = useState({
@@ -19,7 +20,9 @@ const CreateProfile = () => {
   const [charResults, setCharResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
   const navigate = useNavigate();
+  const { checkUser } = useAuth();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -112,6 +115,7 @@ const CreateProfile = () => {
       const res = await api.post("/profile", formData);
 
       if (res.status === 200 || res.status === 201) {
+        await checkUser();
         navigate("/profile");
       }
     } catch (err) {

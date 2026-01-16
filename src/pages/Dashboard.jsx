@@ -143,19 +143,27 @@ const Dashboard = () => {
     }
   };
 
-  const handleSaveProfile = async (profileId) => {
+  const handleToggleSave = async (profileId) => {
+    const isSaved = mySavedIds.has(profileId);
     try {
-      await api.post(`/saved-profiles/${profileId}`);
-
-      setMySavedIds((prev) => new Set(prev).add(profileId));
-      setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount + 1 }));
-
-      alert("Operative added to your squadron.");
-    } catch (err) {
-      console.error("Failed to save profile:", err);
-      if (err.response && err.response.status === 400) {
-        alert("Already in your squadron.");
+      if (isSaved) {
+        await api.delete(`/saved-profiles/${profileId}`);
+        setMySavedIds((prev) => {
+          const newSet = new Set(prev);
+          newSet.delete(profileId);
+          return newSet;
+        });
+        setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount - 1 }));
+      } else {
+        await api.post(`/saved-profiles/${profileId}`);
+        setMySavedIds((prev) => new Set(prev).add(profileId));
+        setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount + 1 }));
+        alert("Operative added to your squadron.");
       }
+    } catch (err) {
+      console.error("Failed to toggle save profile:", err);
+      const msg = err.response?.data?.message || "Action failed.";
+      alert(msg);
     }
   };
 
@@ -232,7 +240,7 @@ const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-end sm:items-center mb-6 gap-4 border-b border-gray-200 dark:border-slate-800 pb-4">
+      <div className="flex flex-col lg:flex-row justify-between items-center mb-6 gap-4 border-b border-gray-200 dark:border-slate-800 pb-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
           Explore Operatives
           <span className="bg-gray-200 dark:bg-slate-800 text-gray-600 dark:text-gray-400 text-xs px-2 py-1 rounded-full">
@@ -240,13 +248,43 @@ const Dashboard = () => {
           </span>
         </h2>
 
-        <form onSubmit={handleSearch} className="flex w-full sm:w-auto gap-2">
+        {!loading && (
+          <div className="flex items-center gap-2">
+            <button
+              disabled={page === 1}
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
+                page === 1
+                  ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
+                  : "bg-white dark:bg-slate-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 shadow-sm"
+              }`}
+            >
+              Prev
+            </button>
+            <span className="px-2 text-gray-600 dark:text-gray-400 font-mono text-xs font-bold">
+              {page}/{totalPages}
+            </span>
+            <button
+              disabled={page >= totalPages}
+              onClick={() => setPage((p) => p + 1)}
+              className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
+                page >= totalPages
+                  ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20"
+              }`}
+            >
+              Next
+            </button>
+          </div>
+        )}
+
+        <form onSubmit={handleSearch} className="flex w-full lg:w-auto gap-2">
           <input
             type="text"
             placeholder="Search username..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full sm:w-64 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition-all"
+            className="w-full lg:w-64 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition-all"
           />
           <button
             type="submit"
@@ -262,129 +300,98 @@ const Dashboard = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         </div>
       ) : (
-        <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {profiles.length > 0 ? (
-              profiles.map((profile) => {
-                const isSaved = mySavedIds.has(profile._id);
-                if (profile._id === user?._id) return null;
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {profiles.length > 0 ? (
+            profiles.map((profile) => {
+              const isSaved = mySavedIds.has(profile._id);
+              if (profile._id === user?._id) return null;
 
-                return (
-                  <div
-                    key={profile._id}
-                    className="p-5 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 relative group"
-                  >
-                    <div className="flex items-center mb-4">
-                      {profile.avatar ? (
-                        <img
-                          src={profile.avatar}
-                          alt={profile.username}
-                          className="h-12 w-12 rounded-full object-cover mr-4 border-2 border-gray-100 dark:border-slate-700 group-hover:border-indigo-500 transition-colors"
-                        />
-                      ) : (
-                        <div className="h-12 w-12 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center font-bold mr-4 text-xl border-2 border-transparent group-hover:border-indigo-500 transition-all">
-                          {profile.username?.charAt(0).toUpperCase() || "P"}
-                        </div>
-                      )}
-                      <div className="overflow-hidden">
-                        <h4 className="font-bold text-lg leading-tight truncate text-gray-900 dark:text-white">
-                          {profile.username || "Anonymous Player"}
-                        </h4>
-                        <span className="text-xs text-gray-400 font-mono">
-                          ID: {profile._id.slice(-4)}
-                        </span>
+              return (
+                <div
+                  key={profile._id}
+                  className="p-5 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 relative group"
+                >
+                  <div className="flex items-center mb-4">
+                    {profile.avatar ? (
+                      <img
+                        src={profile.avatar}
+                        alt={profile.username}
+                        className="h-12 w-12 rounded-full object-cover mr-4 border-2 border-gray-100 dark:border-slate-700 group-hover:border-indigo-500 transition-colors"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center font-bold mr-4 text-xl border-2 border-transparent group-hover:border-indigo-500 transition-all">
+                        {profile.username?.charAt(0).toUpperCase() || "P"}
                       </div>
-                    </div>
-
-                    <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 bg-gray-50 dark:bg-slate-950/50 p-2 rounded-lg">
-                      🎮 Games Collected:{" "}
-                      <span className="font-bold text-gray-900 dark:text-white">
-                        {profile.games?.length || 0}
+                    )}
+                    <div className="overflow-hidden">
+                      <h4 className="font-bold text-lg leading-tight truncate text-gray-900 dark:text-white">
+                        {profile.username || "Anonymous Player"}
+                      </h4>
+                      <span className="text-xs text-gray-400 font-mono">
+                        ID: {profile._id.slice(-4)}
                       </span>
-                    </p>
-
-                    <div className="flex justify-between items-center border-t border-gray-100 dark:border-slate-800 pt-4 mt-2">
-                      <div className="flex gap-4">
-                        <button
-                          onClick={() => handleReaction(profile._id, "like")}
-                          className="flex items-center text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition text-sm font-bold gap-1"
-                        >
-                          👍 {profile.likes || 0}
-                        </button>
-                        <button
-                          onClick={() => handleReaction(profile._id, "dislike")}
-                          className="flex items-center text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition text-sm font-bold gap-1"
-                        >
-                          👎 {profile.dislikes || 0}
-                        </button>
-                      </div>
-
-                      <button
-                        onClick={() =>
-                          !isSaved && handleSaveProfile(profile._id)
-                        }
-                        disabled={isSaved}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all shadow-md ${
-                          isSaved
-                            ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 cursor-default"
-                            : "text-white bg-gray-900 dark:bg-slate-700 hover:bg-blue-600 dark:hover:bg-blue-600"
-                        }`}
-                      >
-                        {isSaved ? "✓ Saved" : "Save Profile"}
-                      </button>
                     </div>
                   </div>
-                );
-              })
-            ) : (
-              <div className="col-span-full text-center py-20 bg-white dark:bg-slate-900/50 rounded-3xl border border-dashed border-gray-300 dark:border-slate-700">
-                <p className="text-gray-500 text-lg">
-                  No operatives found matching "{searchQuery}"
-                </p>
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSearchInput("");
-                    }}
-                    className="mt-4 text-blue-600 hover:underline font-bold"
-                  >
-                    Clear Search
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
 
-          <div className="flex justify-center mt-10 gap-2">
-            <button
-              disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
-                page === 1
-                  ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
-                  : "bg-white dark:bg-slate-800 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-200 dark:border-slate-700 shadow-sm"
-              }`}
-            >
-              Previous
-            </button>
-            <span className="px-4 py-2 text-gray-600 dark:text-gray-400 font-mono flex items-center">
-              PAGE {page} / {totalPages}
-            </span>
-            <button
-              disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
-              className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
-                page >= totalPages
-                  ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
-                  : "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20"
-              }`}
-            >
-              Next
-            </button>
-          </div>
-        </>
+                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-5 bg-gray-50 dark:bg-slate-950/50 p-2 rounded-lg">
+                    🎮 Games Collected:{" "}
+                    <span className="font-bold text-gray-900 dark:text-white">
+                      {profile.games?.length || 0}
+                    </span>
+                  </p>
+
+                  <div className="flex justify-between items-center border-t border-gray-100 dark:border-slate-800 pt-4 mt-2">
+                    <div className="flex gap-4">
+                      <button
+                        onClick={() => handleReaction(profile._id, "like")}
+                        className="flex items-center text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition text-sm font-bold gap-1"
+                      >
+                        👍 {profile.likes || 0}
+                      </button>
+                      <button
+                        onClick={() => handleReaction(profile._id, "dislike")}
+                        className="flex items-center text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition text-sm font-bold gap-1"
+                      >
+                        👎 {profile.dislikes || 0}
+                      </button>
+                    </div>
+
+                    <button
+                      onClick={() => handleToggleSave(profile._id)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all shadow-md ${
+                        isSaved
+                          ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 hover:content-['Unsave']"
+                          : "text-white bg-gray-900 dark:bg-slate-700 hover:bg-blue-600 dark:hover:bg-blue-600"
+                      }`}
+                    >
+                      {isSaved ? "✓ Saved" : "Save Profile"}
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="col-span-full text-center py-20 bg-white dark:bg-slate-900/50 rounded-3xl border border-dashed border-gray-300 dark:border-slate-700">
+              <p className="text-gray-500 text-lg">
+                No operatives found matching "{searchQuery}"
+              </p>
+              {searchQuery && (
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setSearchInput("");
+                  }}
+                  className="mt-4 text-blue-600 hover:underline font-bold"
+                >
+                  Clear Search
+                </button>
+              )}
+            </div>
+          )}
+        </div>
       )}
+
+      <div className="h-24 w-full"></div>
     </div>
   );
 };

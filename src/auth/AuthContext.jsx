@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import axios from "../api/axios";
 import api from "../api/axios";
 
@@ -8,19 +8,20 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const res = await axios.get("/auth/me");
-        setUser(res.data.data.user);
-      } catch (err) {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkUser();
+  const checkUser = useCallback(async () => {
+    try {
+      const res = await axios.get("/auth/me");
+      setUser(res.data.data.user);
+    } catch (err) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    checkUser();
+  }, [checkUser]);
 
   const login = async (email, password) => {
     try {
@@ -43,7 +44,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading, checkUser }}>
       {!loading ? children : null}
     </AuthContext.Provider>
   );
