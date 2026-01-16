@@ -1,4 +1,3 @@
-// src/pages/admin/Users.jsx
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "../../api/axios";
@@ -9,7 +8,6 @@ const Users = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Get values from URL or set defaults
   const search = searchParams.get("search") || "";
   const planFilter = searchParams.get("plan") || "";
   const page = parseInt(searchParams.get("page")) || 1;
@@ -19,7 +17,6 @@ const Users = () => {
   const fetchUsers = async (targetPage = page) => {
     setLoading(true);
     try {
-      // The backend service now searches both email and profile username
       const res = await axios.get("/admin/users", {
         params: { search, plan: planFilter, page: targetPage, limit: 10 },
       });
@@ -38,7 +35,6 @@ const Users = () => {
   }, [search, planFilter, page]);
 
   const updateFilters = (newParams) => {
-    // Reset to page 1 on new search/filter to avoid empty results on high pages
     const nextParams = {
       search: newParams.search !== undefined ? newParams.search : search,
       plan: newParams.plan !== undefined ? newParams.plan : planFilter,
@@ -50,7 +46,7 @@ const Users = () => {
   const handleToggleBlock = async (userId) => {
     try {
       await axios.patch(`/admin/users/${userId}/status`);
-      fetchUsers(page); // Refresh list to reflect changes
+      fetchUsers(page); 
     } catch (err) {
       alert("Failed to update status");
     }
@@ -162,7 +158,6 @@ const Users = () => {
             </tbody>
           </table>
 
-          {/* Pagination Controls */}
           <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
             <div className="text-xs text-slate-500 font-medium">
               Total Records: {pagination.total}

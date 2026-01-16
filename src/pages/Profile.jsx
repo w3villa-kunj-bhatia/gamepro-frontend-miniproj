@@ -138,7 +138,7 @@ const Profile = () => {
         <div className="md:col-span-2 lg:col-span-2 bg-slate-900/50 backdrop-blur-sm border border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              Deployments ({profile?.games?.length || 0} / {limits.games})
+              {profile?.username}'s Favourite Games ({profile?.games?.length || 0} / {limits.games})
             </span>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
@@ -215,7 +215,7 @@ const Profile = () => {
 
         <div className="md:col-span-1 lg:col-span-1 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
-            Network ({savedProfiles.length} / {limits.savedProfiles})
+           {profile?.username}'s Network ({savedProfiles.length} / {limits.savedProfiles})
           </span>
           <div className="grid grid-cols-2 gap-3">
             {savedProfiles.slice(0, 4).map((item) => (
@@ -267,29 +267,37 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className=" lg:col-span-2 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-center">
+        <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
-            Squadron (Characters)
+            {profile?.username}'s Squadron (Fav Characters)
           </span>
-          <div className="flex gap-4 overflow-x-auto pb-2 custom-scrollbar">
+
+          <div className="flex flex-wrap gap-3">
             {profile?.topCharacters?.length > 0 ? (
               profile.topCharacters.map((char, i) => (
                 <div
                   key={i}
-                  className="flex-shrink-0 flex items-center gap-3 bg-slate-800/50 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 group transition-all"
+                  className="flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 hover:border-indigo-500/50 group transition-all duration-300"
                 >
-                  <img
-                    src={char.imageUrl}
-                    className="w-10 h-10 rounded-full border border-indigo-500/50 object-cover group-hover:rotate-12 transition-transform"
-                    alt={char.name}
-                  />
-                  <span className="text-xs font-bold uppercase tracking-tight text-slate-300 whitespace-nowrap">
+                  <div className="relative">
+                    <img
+                      src={char.imageUrl}
+                      className="w-10 h-10 rounded-full border border-indigo-500/30 object-cover group-hover:scale-110 transition-transform"
+                      alt={char.name}
+                    />
+                    <div className="absolute inset-0 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/10 transition-all" />
+                  </div>
+                  <span className="text-[11px] font-bold uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">
                     {char.name}
                   </span>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-slate-500 italic">No Squad Deployed</p>
+              <div className="w-full py-4 border-2 border-dashed border-slate-800/50 rounded-2xl flex items-center justify-center">
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest italic">
+                  No Squad Deployed
+                </p>
+              </div>
             )}
           </div>
         </div>
