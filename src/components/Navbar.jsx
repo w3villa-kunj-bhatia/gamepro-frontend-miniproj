@@ -22,11 +22,10 @@ const Navbar = () => {
                     rounded-3xl shadow-[0_10px_40px_rgba(0,0,0,0.2)] transition-all duration-300"
     >
       <div className="flex items-center flex-shrink-0">
-        <Link
-          to="/"
-          className="text-lg md:text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent select-none"
-        >
-          GamePro
+        <Link to="/">
+          <span className="inline-block text-lg md:text-xl font-black bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent select-none">
+            GamePro
+          </span>
         </Link>
       </div>
 
@@ -48,7 +47,7 @@ const Navbar = () => {
             </Link>
 
             <Link to="/profile" className="flex items-center space-x-2 group">
-              <span className="text-white font-bold hidden sm:block max-w-[80px] truncate">
+              <span className="text-gray-700 dark:text-white font-bold hidden sm:block max-w-[80px] truncate">
                 {user?.username || user?.email?.split("@")[0] || "User"}
               </span>
               <img
@@ -74,7 +73,7 @@ const Navbar = () => {
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}
                 stroke="currentColor"
-                className="w-5 h-5" 
+                className="w-5 h-5"
               >
                 <path
                   strokeLinecap="round"

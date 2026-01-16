@@ -3,7 +3,8 @@ import Navbar from "./components/Navbar";
 
 const App = () => {
   return (
-    <div className="min-h-screen transition-colors duration-300">
+    <div className="min-h-screen">
+      {" "}
       <Navbar />
       <AppRoutes />
     </div>

@@ -48,7 +48,7 @@ const Profile = () => {
       const canvas = await html2canvas(element, {
         scale: 2,
         useCORS: true,
-        backgroundColor: "#020617",
+        backgroundColor: "#020617", // Keep dark bg for the PDF export specifically
         logging: false,
         ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
       });
@@ -82,7 +82,7 @@ const Profile = () => {
       borderColor: "border-amber-500/20",
       iconBg: "bg-amber-500",
       shadow: "shadow-amber-500/20",
-      textColor: "text-amber-500",
+      textColor: "text-amber-600 dark:text-amber-500",
     },
     silver: {
       emoji: "⚔️",
@@ -91,7 +91,7 @@ const Profile = () => {
       borderColor: "border-slate-300/20",
       iconBg: "bg-slate-400",
       shadow: "shadow-slate-400/20",
-      textColor: "text-slate-300",
+      textColor: "text-slate-500 dark:text-slate-300",
     },
     free: {
       emoji: "💪",
@@ -100,19 +100,21 @@ const Profile = () => {
       borderColor: "border-indigo-600/20",
       iconBg: "bg-indigo-600",
       shadow: "shadow-indigo-600/20",
-      textColor: "text-indigo-400",
+      textColor: "text-indigo-600 dark:text-indigo-400",
     },
   };
 
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   return (
-    <div className="min-h-screen w-full bg-slate-950 text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
+    // UPDATED: Added dark: prefixes and standard light mode colors
+    <div className="min-h-screen w-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
       <div
         id="profile-identity"
         className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-min"
       >
-        <div className="md:col-span-1 lg:row-span-3 bg-slate-900/50 backdrop-blur-sm border border-slate-800/80 rounded-3xl p-6 flex flex-col items-center shadow-xl relative overflow-hidden group">
+        {/* Profile Card */}
+        <div className="md:col-span-1 lg:row-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col items-center shadow-xl relative overflow-hidden group">
           <div
             className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace(
               "/10",
@@ -129,34 +131,35 @@ const Profile = () => {
                     profile?.username || "User"
                   }&background=random`
                 }
-                className={`w-36 h-36 rounded-full mx-auto border-4 ${theme.borderColor} shadow-2xl object-cover`}
+                className={`w-36 h-36 rounded-full mx-auto border-4 ${theme.borderColor} shadow-2xl object-cover bg-gray-100 dark:bg-slate-800`}
                 alt="Avatar"
               />
               <div
-                className={`absolute bottom-2 right-2 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
+                className={`absolute bottom-2 right-2 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center text-lg shadow-lg`}
               >
                 {theme.emoji}
               </div>
             </div>
 
-            <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full text-white">
+            <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full text-gray-900 dark:text-white">
               {profile?.username || "Operative"}
             </h2>
-            <p className="text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-3">
+            <p className="text-indigo-600 dark:text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-3">
               System Level: {currentPlan}
             </p>
 
-            <div className="mt-12 w-full bg-slate-950/50 border border-slate-800 rounded-2xl p-4 mb-6">
+            {/* Location Card */}
+            <div className="mt-12 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">📍</span>
-                <p className="text-slate-300 text-md font-medium truncate">
+                <p className="text-gray-600 dark:text-slate-300 text-md font-medium truncate">
                   {profile?.address || "Location Hidden"}
                 </p>
               </div>
 
-              <div className="mt-5 aspect-video w-full bg-slate-900 rounded-xl border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="mt-5 aspect-video w-full bg-gray-200 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png')] bg-cover bg-center grayscale" />
-                <span className="relative z-10 text-[8px] font-black text-slate-500 uppercase tracking-widest bg-slate-950/80 px-2 py-1 rounded">
+                <span className="relative z-10 text-[8px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest bg-white/80 dark:bg-slate-950/80 px-2 py-1 rounded">
                   Map Synchronization Pending
                 </span>
               </div>
@@ -165,14 +168,14 @@ const Profile = () => {
             <div className="mt-auto w-full flex flex-col gap-2 download-btn-wrapper">
               <Link
                 to="/create-profile"
-                className="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg text-center text-white"
+                className="w-full bg-white dark:bg-slate-800 hover:bg-indigo-50 dark:hover:bg-indigo-600 border border-gray-200 dark:border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg text-center text-gray-700 dark:text-white hover:text-indigo-600 dark:hover:text-white"
               >
                 Edit Identity
               </Link>
               <button
                 onClick={downloadProfilePDF}
                 disabled={isDownloading}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
+                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
               >
                 {isDownloading ? "Generating..." : "Download Identity (PDF)"}
               </button>
@@ -180,6 +183,7 @@ const Profile = () => {
           </div>
         </div>
 
+        {/* Membership Tier Card */}
         <div
           className={`md:col-span-2 lg:col-span-1 min-h-[160px] ${theme.bgColor} ${theme.borderColor} border rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]`}
         >
@@ -193,14 +197,15 @@ const Profile = () => {
           >
             {theme.label}
           </h3>
-          <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-wider">
+          <p className="text-[10px] text-gray-500 dark:text-slate-400 mt-1 uppercase tracking-wider">
             Current Tier
           </p>
         </div>
 
-        <div className="md:col-span-2 lg:col-span-2 bg-slate-900/50 backdrop-blur-sm border border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
+        {/* Favorite Games Card */}
+        <div className="md:col-span-2 lg:col-span-2 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
           <div className="flex justify-between items-center mb-4">
-            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+            <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest">
               {profile?.username}'s Favourite Games (
               {profile?.games?.length || 0} / {limits.games})
             </span>
@@ -217,7 +222,7 @@ const Profile = () => {
                     className={`relative aspect-[3/4] rounded-xl overflow-hidden border ${
                       isLocked
                         ? "border-red-900/30"
-                        : "border-slate-700 group-hover:border-indigo-500"
+                        : "border-gray-200 dark:border-slate-700 group-hover:border-indigo-500"
                     } transition-all`}
                   >
                     <img
@@ -231,7 +236,7 @@ const Profile = () => {
                     />
                     {!isLocked && (
                       <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                        <span className="text-[10px] font-bold uppercase tracking-tighter leading-tight">
+                        <span className="text-[10px] font-bold uppercase tracking-tighter leading-tight text-white">
                           {game.name}
                         </span>
                       </div>
@@ -248,12 +253,15 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="md:col-span-3 lg:col-span-3 bg-slate-900 border border-slate-800 rounded-3xl p-4 md:p-6 relative overflow-hidden flex items-center min-h-[70px]">
+        {/* System Log / Info Bar */}
+        <div className="md:col-span-3 lg:col-span-3 bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 relative overflow-hidden flex items-center min-h-[70px]">
           <div
             className={`absolute left-0 top-0 bottom-0 w-1 ${theme.iconBg} opacity-80`}
           />
-          <p className="text-xs font-mono text-slate-400 pl-4 leading-relaxed">
-            <span className="text-indigo-400 font-bold">SYSTEM_LOG:</span>{" "}
+          <p className="text-xs font-mono text-gray-600 dark:text-slate-400 pl-4 leading-relaxed">
+            <span className="text-indigo-600 dark:text-indigo-400 font-bold">
+              SYSTEM_LOG:
+            </span>{" "}
             Synchronization complete. Status:{" "}
             <span className={`${theme.textColor} font-bold`}>
               {currentPlan.toUpperCase()}
@@ -265,8 +273,9 @@ const Profile = () => {
           </p>
         </div>
 
-        <div className="md:col-span-1 lg:col-span-1 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6">
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
+        {/* Network / Saved Profiles */}
+        <div className="md:col-span-1 lg:col-span-1 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6">
+          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
             {profile?.username}'s Network ({savedProfiles.length} /{" "}
             {limits.savedProfiles})
           </span>
@@ -274,7 +283,7 @@ const Profile = () => {
             {savedProfiles.slice(0, 4).map((item) => (
               <div
                 key={item._id}
-                className="relative group aspect-square rounded-2xl overflow-hidden border-2 border-slate-700 hover:border-indigo-500 transition-all"
+                className="relative group aspect-square rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-500 transition-all"
               >
                 <img
                   src={
@@ -285,7 +294,7 @@ const Profile = () => {
                   alt={item.profile?.username}
                 />
                 <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full">
+                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full text-white">
                     {item.profile?.username}
                   </span>
                 </div>
@@ -294,8 +303,9 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
-          <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
+        {/* Squadron / Characters */}
+        <div className="lg:col-span-2 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
+          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
             {profile?.username}'s Squadron
           </span>
 
@@ -304,7 +314,7 @@ const Profile = () => {
               profile.topCharacters.map((char, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 bg-slate-800/40 hover:bg-indigo-600/20 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 hover:border-indigo-500/50 group transition-all duration-300"
+                  className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800/40 hover:bg-indigo-50 dark:hover:bg-indigo-600/20 pr-4 pl-1 py-1 rounded-full border border-gray-200 dark:border-slate-700/50 hover:border-indigo-500/50 group transition-all duration-300"
                 >
                   <div className="relative">
                     <img
@@ -314,18 +324,18 @@ const Profile = () => {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-[11px] font-bold uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">
+                    <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-white transition-colors">
                       {char.name}
                     </span>
-                    <span className="text-[8px] font-medium text-slate-500 uppercase group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">
+                    <span className="text-[8px] font-medium text-gray-400 dark:text-slate-500 uppercase group-hover:text-indigo-500 dark:group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">
                       Active Unit
                     </span>
                   </div>
                 </div>
               ))
             ) : (
-              <div className="w-full py-4 border-2 border-dashed border-slate-800/50 rounded-2xl flex items-center justify-center">
-                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest italic">
+              <div className="w-full py-4 border-2 border-dashed border-gray-300 dark:border-slate-800/50 rounded-2xl flex items-center justify-center">
+                <p className="text-[10px] font-bold text-gray-400 dark:text-slate-600 uppercase tracking-widest italic">
                   No Squad Deployed
                 </p>
               </div>
