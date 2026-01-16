@@ -9,7 +9,6 @@ const Navbar = () => {
   const { user, logout, loading } = useAuth();
   const location = useLocation();
 
-  // State to hold the full profile details (avatar and username)
   const [profileData, setProfileData] = useState({
     avatar: null,
     username: null,
@@ -20,18 +19,15 @@ const Navbar = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       if (user) {
-        // Initialize with whatever data we currently have
         let currentAvatar = user.avatar || null;
         let currentUsername = user.username || null;
 
-        // If either avatar or username is missing from the auth 'user' object, fetch the full profile
         if (!currentAvatar || !currentUsername) {
           try {
             const res = await api.get("/profile/me");
             const data = res.data?.data;
 
             if (data) {
-              // Only update if we didn't have the data already
               if (!currentAvatar) currentAvatar = data.avatar;
               if (!currentUsername) currentUsername = data.username;
             }
@@ -90,7 +86,6 @@ const Navbar = () => {
             </Link>
 
             <Link to="/profile" className="flex items-center space-x-2 group">
-              {/* Display Username from local state, falling back to auth user, then email */}
               <span className="text-gray-700 dark:text-white font-bold hidden sm:block max-w-[80px] truncate">
                 {profileData.username ||
                   user.username ||
