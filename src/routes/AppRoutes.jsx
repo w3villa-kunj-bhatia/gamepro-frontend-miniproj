@@ -8,7 +8,6 @@ import Dashboard from "../pages/Dashboard";
 import Profile from "../pages/Profile";
 import SavedProfiles from "../pages/SavedProfiles";
 import Plans from "../pages/Plans";
-import AdminDashboard from "../pages/admin/AdminDashboard";
 import Users from "../pages/admin/Users";
 
 import LandingPage from "../pages/LandingPage";
@@ -40,7 +39,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-<Route
+      <Route
         path="/profile"
         element={
           <ProtectedRoute key="profile">
@@ -65,14 +64,6 @@ const AppRoutes = () => {
         }
       />
 
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute adminOnly={true}>
-            <AdminDashboard />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/admin/users"
         element={

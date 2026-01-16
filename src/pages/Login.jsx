@@ -22,7 +22,7 @@ const Login = () => {
       const userData = await login(email, password);
 
       if (userData.role === "admin") {
-        navigate("/admin");
+        navigate("/admin/users");
       } else {
         try {
           await api.get("/profile/me");
