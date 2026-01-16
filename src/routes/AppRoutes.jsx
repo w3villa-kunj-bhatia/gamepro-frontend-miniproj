@@ -9,7 +9,8 @@ import Profile from "../pages/Profile";
 import SavedProfiles from "../pages/SavedProfiles";
 import Plans from "../pages/Plans";
 import Users from "../pages/admin/Users";
-
+import PaymentSuccess from "../pages/PaymentSuccess";
+import PaymentCancel from "../pages/PaymentCancel";
 import LandingPage from "../pages/LandingPage";
 import CreateProfile from "../pages/CreateProfile";
 
@@ -69,6 +70,22 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute adminOnly={true}>
             <Users />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/success"
+        element={
+          <ProtectedRoute>
+            <PaymentSuccess />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/payment/cancel"
+        element={
+          <ProtectedRoute>
+            <PaymentCancel />
           </ProtectedRoute>
         }
       />
