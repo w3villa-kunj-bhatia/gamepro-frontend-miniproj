@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 const Profile = () => {
   const { user: authUser } = useAuth();
   const [profile, setProfile] = useState(null);
   const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const plansConfig = {
     free: { games: 3, savedProfiles: 3 },
@@ -24,7 +27,6 @@ const Profile = () => {
           api.get("/profile/me"),
           api.get("/saved-profiles"),
         ]);
-
         setProfile(profileRes.data.data);
         setSavedProfiles(savedRes.data.data || []);
       } catch (err) {
@@ -33,9 +35,39 @@ const Profile = () => {
         setLoading(false);
       }
     };
-
     fetchProfileData();
   }, []);
+
+  const downloadProfilePDF = async () => {
+    if (!profile) return;
+    const element = document.getElementById("profile-identity");
+    if (!element) return;
+
+    try {
+      setIsDownloading(true);
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#020617",
+        logging: false,
+        ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.save(`${profile.username || "Operative"}_Identity.pdf`);
+    } catch (error) {
+      console.error("PDF Generation Error:", error);
+      alert("Failed to generate PDF. Check console for details.");
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   if (loading) return <Loader />;
 
@@ -76,7 +108,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-slate-950 text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
-      <div className="max-w-6xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-min">
+      <div
+        id="profile-identity"
+        className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-min"
+      >
         <div className="md:col-span-1 lg:row-span-3 bg-slate-900/50 backdrop-blur-sm border border-slate-800/80 rounded-3xl p-6 flex flex-col items-center shadow-xl relative overflow-hidden group">
           <div
             className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace(
@@ -84,6 +119,7 @@ const Profile = () => {
               "/5"
             )} to-transparent opacity-50`}
           />
+
           <div className="text-center w-full relative z-10 flex-1 flex flex-col items-center">
             <div className="relative inline-block mb-6 mt-4">
               <img
@@ -102,18 +138,45 @@ const Profile = () => {
                 {theme.emoji}
               </div>
             </div>
-            <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full">
+
+            <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full text-white">
               {profile?.username || "Operative"}
             </h2>
-            <p className="text-slate-400 text-sm mt-1 font-medium truncate w-full mb-8">
-              📍 {profile?.address || "Location Hidden"}
+            <p className="text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-3">
+              System Level: {currentPlan}
             </p>
-            <Link
-              to="/create-profile"
-              className="mt-auto w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg text-center"
-            >
-              Edit Identity
-            </Link>
+
+            <div className="mt-12 w-full bg-slate-950/50 border border-slate-800 rounded-2xl p-4 mb-6">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xl">📍</span>
+                <p className="text-slate-300 text-md font-medium truncate">
+                  {profile?.address || "Location Hidden"}
+                </p>
+              </div>
+
+              <div className="mt-5 aspect-video w-full bg-slate-900 rounded-xl border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 bg-[url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png')] bg-cover bg-center grayscale" />
+                <span className="relative z-10 text-[8px] font-black text-slate-500 uppercase tracking-widest bg-slate-950/80 px-2 py-1 rounded">
+                  Map Synchronization Pending
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-auto w-full flex flex-col gap-2 download-btn-wrapper">
+              <Link
+                to="/create-profile"
+                className="w-full bg-slate-800 hover:bg-indigo-600 border border-slate-700 hover:border-indigo-500 py-3 rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg text-center text-white"
+              >
+                Edit Identity
+              </Link>
+              <button
+                onClick={downloadProfilePDF}
+                disabled={isDownloading}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
+              >
+                {isDownloading ? "Generating..." : "Download Identity (PDF)"}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -138,7 +201,8 @@ const Profile = () => {
         <div className="md:col-span-2 lg:col-span-2 bg-slate-900/50 backdrop-blur-sm border border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
           <div className="flex justify-between items-center mb-4">
             <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-              {profile?.username}'s Favourite Games ({profile?.games?.length || 0} / {limits.games})
+              {profile?.username}'s Favourite Games (
+              {profile?.games?.length || 0} / {limits.games})
             </span>
           </div>
           <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar snap-x">
@@ -181,18 +245,6 @@ const Profile = () => {
                 </div>
               );
             })}
-            {[
-              ...Array(
-                Math.max(0, limits.games - (profile?.games?.length || 0))
-              ),
-            ].map((_, i) => (
-              <div
-                key={`empty-${i}`}
-                className="flex-shrink-0 w-24 aspect-[3/4] rounded-xl border-2 border-dashed border-slate-800 flex items-center justify-center opacity-50"
-              >
-                <span className="text-slate-700 text-xs font-bold">EMPTY</span>
-              </div>
-            ))}
           </div>
         </div>
 
@@ -215,7 +267,8 @@ const Profile = () => {
 
         <div className="md:col-span-1 lg:col-span-1 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
-           {profile?.username}'s Network ({savedProfiles.length} / {limits.savedProfiles})
+            {profile?.username}'s Network ({savedProfiles.length} /{" "}
+            {limits.savedProfiles})
           </span>
           <div className="grid grid-cols-2 gap-3">
             {savedProfiles.slice(0, 4).map((item) => (
@@ -238,38 +291,12 @@ const Profile = () => {
                 </div>
               </div>
             ))}
-
-            {[
-              ...Array(
-                Math.max(
-                  0,
-                  Math.min(4, limits.savedProfiles) - savedProfiles.length
-                )
-              ),
-            ].map((_, i) => (
-              <div
-                key={`empty-net-${i}`}
-                className="aspect-square rounded-2xl border-2 border-dashed border-slate-800 flex items-center justify-center bg-slate-800/30"
-              >
-                <span className="text-slate-600 text-xl">+</span>
-              </div>
-            ))}
-
-            {limits.savedProfiles < 4 &&
-              [...Array(4 - limits.savedProfiles)].map((_, i) => (
-                <div
-                  key={`locked-net-${i}`}
-                  className="aspect-square rounded-2xl border-2 border-dashed border-slate-800/50 flex items-center justify-center bg-black/20"
-                >
-                  <span className="text-slate-700">🔒</span>
-                </div>
-              ))}
           </div>
         </div>
 
         <div className="lg:col-span-2 bg-slate-900/50 border border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-4">
-            {profile?.username}'s Squadron (Fav Characters)
+            {profile?.username}'s Squadron
           </span>
 
           <div className="flex flex-wrap gap-3">
@@ -277,19 +304,23 @@ const Profile = () => {
               profile.topCharacters.map((char, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-3 bg-slate-800/40 hover:bg-slate-800/80 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 hover:border-indigo-500/50 group transition-all duration-300"
+                  className="flex items-center gap-3 bg-slate-800/40 hover:bg-indigo-600/20 pr-4 pl-1 py-1 rounded-full border border-slate-700/50 hover:border-indigo-500/50 group transition-all duration-300"
                 >
                   <div className="relative">
                     <img
                       src={char.imageUrl}
-                      className="w-10 h-10 rounded-full border border-indigo-500/30 object-cover group-hover:scale-110 transition-transform"
+                      className="w-10 h-10 rounded-full border border-indigo-500/30 object-cover group-hover:scale-110 group-hover:rotate-12 transition-transform"
                       alt={char.name}
                     />
-                    <div className="absolute inset-0 rounded-full bg-indigo-500/0 group-hover:bg-indigo-500/10 transition-all" />
                   </div>
-                  <span className="text-[11px] font-bold uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">
-                    {char.name}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold uppercase tracking-tight text-slate-300 group-hover:text-white transition-colors">
+                      {char.name}
+                    </span>
+                    <span className="text-[8px] font-medium text-slate-500 uppercase group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">
+                      Active Unit
+                    </span>
+                  </div>
                 </div>
               ))
             ) : (
