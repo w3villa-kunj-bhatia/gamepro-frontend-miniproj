@@ -116,7 +116,7 @@ const Dashboard = () => {
     const delayDebounceFn = setTimeout(() => {
       setSearchQuery(searchInput);
       setPage(1);
-    }, 500); 
+    }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [searchInput]);
@@ -134,14 +134,16 @@ const Dashboard = () => {
 
   const handleReaction = async (profileId, type) => {
     try {
-      await api.post(`/reactions/${profileId}`, { type });
+      const res = await api.post(`/reactions/${profileId}`, { type });
+      const { likes, dislikes } = res.data.data;
+
       setProfiles((prev) =>
         prev.map((p) => {
           if (p._id === profileId) {
             return {
               ...p,
-              likes: type === "like" ? (p.likes || 0) + 1 : p.likes,
-              dislikes: type === "dislike" ? (p.dislikes || 0) + 1 : p.dislikes,
+              likes: likes,
+              dislikes: dislikes,
             };
           }
           return p;
@@ -363,13 +365,21 @@ const Dashboard = () => {
                     <div className="flex gap-4">
                       <button
                         onClick={() => handleReaction(profile._id, "like")}
-                        className="flex items-center text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition text-sm font-bold gap-1"
+                        className={`flex items-center transition text-sm font-bold gap-1 ${
+                          myReactions[profile._id] === "like"
+                            ? "text-green-600 dark:text-green-400"
+                            : "text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
+                        }`}
                       >
                         👍 {profile.likes || 0}
                       </button>
                       <button
                         onClick={() => handleReaction(profile._id, "dislike")}
-                        className="flex items-center text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition text-sm font-bold gap-1"
+                        className={`flex items-center transition text-sm font-bold gap-1 ${
+                          myReactions[profile._id] === "dislike"
+                            ? "text-red-500 dark:text-red-400"
+                            : "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                        }`}
                       >
                         👎 {profile.dislikes || 0}
                       </button>

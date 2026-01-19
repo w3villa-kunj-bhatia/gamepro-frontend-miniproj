@@ -6,16 +6,13 @@ const LandingPage = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300 font-sans overflow-x-hidden">
-      {/* --- HERO SECTION --- */}
       <main className="flex-grow pt-24 pb-20 relative overflow-hidden">
-        {/* Background Gradients/Blobs */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
           <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[100px] mix-blend-multiply dark:mix-blend-screen animate-pulse delay-1000"></div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-full px-4 py-1.5 mb-8 shadow-sm animate-fade-in-up">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -26,7 +23,6 @@ const LandingPage = () => {
             </span>
           </div>
 
-          {/* Main Headline */}
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-gray-900 dark:text-white mb-8 leading-tight">
             Command Your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-500">
@@ -50,7 +46,6 @@ const LandingPage = () => {
             .
           </p>
 
-          {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row justify-center gap-5 mb-20">
             <Link
               to="/signup"
@@ -67,11 +62,9 @@ const LandingPage = () => {
             </Link>
           </div>
 
-          {/* Dashboard Preview / Visual */}
           <div className="relative max-w-5xl mx-auto">
             <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-[2rem] blur opacity-20 dark:opacity-40 animate-pulse"></div>
             <div className="relative bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-[1.7rem] shadow-2xl overflow-hidden">
-              {/* Fake Browser Header */}
               <div className="h-10 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700 flex items-center px-4 gap-2">
                 <div className="flex gap-1.5">
                   <div className="w-3 h-3 rounded-full bg-red-400"></div>
@@ -83,9 +76,7 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              {/* Fake Dashboard Content Preview */}
               <div className="p-6 md:p-10 grid md:grid-cols-3 gap-6 opacity-90 pointer-events-none select-none">
-                {/* Card 1 */}
                 <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
                   <div className="text-4xl mb-2">👑</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">
@@ -95,7 +86,6 @@ const LandingPage = () => {
                     <div className="bg-amber-500 w-3/4 h-2 rounded-full"></div>
                   </div>
                 </div>
-                {/* Card 2 */}
                 <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
                   <div className="text-4xl mb-2">🎮</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">
@@ -103,7 +93,6 @@ const LandingPage = () => {
                   </div>
                   <div className="text-sm text-gray-500">Added to Arsenal</div>
                 </div>
-                {/* Card 3 */}
                 <div className="bg-gray-50 dark:bg-slate-800 p-6 rounded-2xl border border-gray-100 dark:border-slate-700">
                   <div className="text-4xl mb-2">👥</div>
                   <div className="text-lg font-bold text-gray-900 dark:text-white">
@@ -115,7 +104,6 @@ const LandingPage = () => {
                 </div>
               </div>
 
-              {/* Overlay Gradient */}
               <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-slate-900 via-transparent to-transparent opacity-80"></div>
               <div className="absolute bottom-10 left-1/2 -translate-x-1/2">
                 <span className="text-sm font-bold text-gray-400 tracking-widest uppercase">
@@ -127,7 +115,6 @@ const LandingPage = () => {
         </div>
       </main>
 
-      {/* --- FEATURES GRID --- */}
       <section className="py-24 bg-white dark:bg-slate-900 transition-colors duration-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -159,7 +146,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* --- STATS BANNER --- */}
       <section className="py-20 border-y border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-950">
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <StatItem label="Active Agents" value="2.4k+" />
@@ -169,8 +155,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* --- FOOTER --- */}
-      {/* Added pb-40 to prevent Navbar Overlap */}
       <footer className="bg-white dark:bg-slate-900 pt-10 pb-28 px-6 border-t border-gray-100 dark:border-slate-800">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
           <div className="text-center md:text-left">
