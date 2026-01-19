@@ -8,8 +8,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  // 1. DERIVE STATE FROM URL
-  // If "page" or "search" changes in the URL, these variables update automatically.
   const page = parseInt(searchParams.get("page") || "1", 10);
   const searchQuery = searchParams.get("search") || "";
 
@@ -25,7 +23,6 @@ const Dashboard = () => {
 
   const [totalPages, setTotalPages] = useState(1);
 
-  // Local state for the input box (visual only)
   const [searchInput, setSearchInput] = useState(searchQuery);
   const LIMIT = 6;
 
@@ -66,7 +63,6 @@ const Dashboard = () => {
   };
   const limit = plansLimits[currentPlan]?.savedProfiles || 3;
 
-  // Helper to update URL params without losing other keys (if any)
   const updateParams = (newParams) => {
     setSearchParams((prev) => {
       const next = new URLSearchParams(prev);
@@ -105,17 +101,14 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
-  // 2. FETCH DATA BASED ON URL PARAMS
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        // Use the 'searchQuery' derived from URL
         const queryParam = searchQuery
           ? `&search=${encodeURIComponent(searchQuery)}`
           : "";
 
-        // Use the 'page' derived from URL
         const res = await api.get(
           `/dashboard/profiles?page=${page}&limit=${LIMIT}${queryParam}`
         );
@@ -134,24 +127,20 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, [page, searchQuery]); // Re-run when URL params change
-
-  // 3. SYNC INPUT WITH URL (Handle Browser Back Button)
+  }, [page, searchQuery]);
   useEffect(() => {
     setSearchInput(searchQuery);
   }, [searchQuery]);
 
-  // 4. DEBOUNCE TYPING TO UPDATE URL
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      // Only update URL if local input differs from URL param
       if (searchInput !== searchQuery) {
         updateParams({ search: searchInput, page: 1 });
       }
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchInput]); // removed searchQuery from dep to avoid race conditions
+  }, [searchInput]);
 
   const handleLogout = async () => {
     await logout();
@@ -209,7 +198,7 @@ const Dashboard = () => {
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-            Welcome, {user?.username || "Operative"}!
+            Welcome to GamePro, {user?.username || "Operative"}!
           </h1>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Command Center & Player Database
@@ -289,7 +278,6 @@ const Dashboard = () => {
           <div className="flex items-center gap-2">
             <button
               disabled={page === 1}
-              // Update URL instead of local state
               onClick={() => updateParams({ page: Math.max(1, page - 1) })}
               className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 page === 1
@@ -304,7 +292,6 @@ const Dashboard = () => {
             </span>
             <button
               disabled={page >= totalPages}
-              // Update URL instead of local state
               onClick={() => updateParams({ page: page + 1 })}
               className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 page >= totalPages
@@ -340,7 +327,6 @@ const Dashboard = () => {
               type="text"
               placeholder="Search Username..."
               value={searchInput}
-              // Update local state (debounce effect will handle URL)
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition-all"
             />
@@ -435,7 +421,6 @@ const Dashboard = () => {
               </p>
               {searchQuery && (
                 <button
-                  // Clear URL params
                   onClick={() => {
                     setSearchInput("");
                     updateParams({ search: "", page: 1 });

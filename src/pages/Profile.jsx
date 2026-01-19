@@ -50,7 +50,7 @@ const Profile = () => {
 
       const canvas = await html2canvas(element, {
         scale: 3,
-        useCORS: true, 
+        useCORS: true,
         allowTaint: true,
         backgroundColor: "#020617",
         logging: false,
@@ -67,7 +67,7 @@ const Profile = () => {
             "#profile-identity > div:first-child"
           );
           if (profileCard) {
-            profileCard.style.backgroundColor = "#0f172a"; 
+            profileCard.style.backgroundColor = "#0f172a";
             profileCard.style.backdropFilter = "none";
           }
 
@@ -298,28 +298,49 @@ const Profile = () => {
             {profile?.username}'s Network ({savedProfiles.length} /{" "}
             {limits.savedProfiles})
           </span>
-          
-          <div className="grid grid-cols-2 gap-3 overflow-y-auto custom-scrollbar pr-2">
-            {savedProfiles.map((item) => (
-              <div
-                key={item._id}
-                className="relative group aspect-square rounded-2xl overflow-hidden border-2 border-gray-200 dark:border-slate-700 hover:border-indigo-500 transition-all shrink-0"
-              >
-                <img
-                  src={
-                    item.profile?.avatar ||
-                    `https://ui-avatars.com/api/?name=${item.profile?.username}`
-                  }
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  alt={item.profile?.username}
-                />
-                <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                  <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full text-white">
-                    {item.profile?.username}
-                  </span>
+
+          <div className="grid grid-cols-3 gap-2 overflow-y-auto custom-scrollbar pr-2">
+            {savedProfiles.map((item, i) => {
+              const isLocked = i >= limits.savedProfiles;
+
+              return (
+                <div
+                  key={item._id}
+                  className={`relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
+                    isLocked
+                      ? "border-red-900/30"
+                      : "border-gray-200 dark:border-slate-700 hover:border-indigo-500"
+                  }`}
+                >
+                  <img
+                    src={
+                      item.profile?.avatar ||
+                      `https://ui-avatars.com/api/?name=${item.profile?.username}`
+                    }
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                      isLocked
+                        ? "grayscale blur-sm opacity-30"
+                        : "group-hover:scale-110"
+                    }`}
+                    alt={item.profile?.username}
+                  />
+
+                  {!isLocked && (
+                    <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
+                      <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full text-white">
+                        {item.profile?.username}
+                      </span>
+                    </div>
+                  )}
+
+                  {isLocked && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                      <span className="text-2xl drop-shadow-lg">🔒</span>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 

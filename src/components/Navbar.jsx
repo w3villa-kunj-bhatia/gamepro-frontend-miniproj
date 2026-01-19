@@ -4,7 +4,6 @@ import { useAuth } from "../auth/AuthContext";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 
-// --- Icons ---
 const HomeIcon = () => (
   <svg
     className="w-6 h-6"
