@@ -58,7 +58,6 @@ const Users = () => {
         Manage Users
       </h1>
 
-      {/* Filters Section */}
       <div className="flex flex-wrap gap-4 mb-6 bg-white dark:bg-slate-900 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800">
         <input
           type="text"
@@ -89,7 +88,6 @@ const Users = () => {
                 <th className="p-4">User Identity</th>
                 <th className="p-4">Verification</th>
                 <th className="p-4">Current Plan</th>
-                {/* Expiry Status Column Removed */}
                 <th className="p-4">Joined Date</th>
                 <th className="p-4 text-center">Actions</th>
               </tr>
@@ -132,7 +130,6 @@ const Users = () => {
                       {user.plan}
                     </span>
                   </td>
-                  {/* Expiry Data Cell Removed */}
                   <td className="p-4 text-slate-600 dark:text-slate-400">
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
@@ -153,7 +150,6 @@ const Users = () => {
             </tbody>
           </table>
 
-          {/* Pagination */}
           <div className="p-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center transition-colors">
             <div className="text-xs text-slate-500 dark:text-slate-400 font-medium">
               Total Records: {pagination.total}

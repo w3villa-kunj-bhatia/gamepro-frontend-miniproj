@@ -201,7 +201,6 @@ const Navbar = () => {
               colorClass="text-indigo-600 dark:text-indigo-400"
             />
 
-            {/* ✅ Admin Panel Button - Only visible if user.role === 'admin' */}
             {user.role === "admin" && (
               <DockItem
                 to="/admin/users"
