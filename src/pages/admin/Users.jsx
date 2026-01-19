@@ -12,7 +12,22 @@ const Users = () => {
   const planFilter = searchParams.get("plan") || "";
   const page = parseInt(searchParams.get("page")) || 1;
 
+  const [localSearch, setLocalSearch] = useState(search);
+
+  useEffect(() => {
+    setLocalSearch(search);
+  }, [search]);
+
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearch !== search) {
+        updateFilters({ search: localSearch, page: 1 });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [localSearch, search]);
 
   const fetchUsers = async (targetPage = page) => {
     setLoading(true);
@@ -30,8 +45,7 @@ const Users = () => {
   };
 
   useEffect(() => {
-    const timer = setTimeout(() => fetchUsers(page), 300);
-    return () => clearTimeout(timer);
+    fetchUsers(page);
   }, [search, planFilter, page]);
 
   const updateFilters = (newParams) => {
@@ -40,6 +54,13 @@ const Users = () => {
       plan: newParams.plan !== undefined ? newParams.plan : planFilter,
       page: newParams.page || 1,
     };
+
+    Object.keys(nextParams).forEach((key) => {
+      if (nextParams[key] === "" || nextParams[key] === undefined) {
+        delete nextParams[key];
+      }
+    });
+
     setSearchParams(nextParams);
   };
 
@@ -63,8 +84,8 @@ const Users = () => {
           type="text"
           placeholder="Search by email or username..."
           className="p-2 border border-gray-200 dark:border-slate-700 rounded-lg w-full md:w-80 outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white transition-colors"
-          value={search}
-          onChange={(e) => updateFilters({ search: e.target.value, page: 1 })}
+          value={localSearch}
+          onChange={(e) => setLocalSearch(e.target.value)}
         />
         <select
           className="p-2 border border-gray-200 dark:border-slate-700 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white cursor-pointer transition-colors"

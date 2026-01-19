@@ -1,11 +1,17 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../auth/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // 1. DERIVE STATE FROM URL
+  // If "page" or "search" changes in the URL, these variables update automatically.
+  const page = parseInt(searchParams.get("page") || "1", 10);
+  const searchQuery = searchParams.get("search") || "";
 
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -17,10 +23,10 @@ const Dashboard = () => {
     planLimit: 0,
   });
 
-  const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [searchInput, setSearchInput] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Local state for the input box (visual only)
+  const [searchInput, setSearchInput] = useState(searchQuery);
   const LIMIT = 6;
 
   const planConfigs = {
@@ -60,6 +66,21 @@ const Dashboard = () => {
   };
   const limit = plansLimits[currentPlan]?.savedProfiles || 3;
 
+  // Helper to update URL params without losing other keys (if any)
+  const updateParams = (newParams) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      Object.entries(newParams).forEach(([key, value]) => {
+        if (value === null || value === undefined || value === "") {
+          next.delete(key);
+        } else {
+          next.set(key, value);
+        }
+      });
+      return next;
+    });
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -84,14 +105,17 @@ const Dashboard = () => {
     fetchUserData();
   }, []);
 
+  // 2. FETCH DATA BASED ON URL PARAMS
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
+        // Use the 'searchQuery' derived from URL
         const queryParam = searchQuery
           ? `&search=${encodeURIComponent(searchQuery)}`
           : "";
 
+        // Use the 'page' derived from URL
         const res = await api.get(
           `/dashboard/profiles?page=${page}&limit=${LIMIT}${queryParam}`
         );
@@ -110,22 +134,24 @@ const Dashboard = () => {
     };
 
     fetchDashboardData();
-  }, [page, searchQuery]);
+  }, [page, searchQuery]); // Re-run when URL params change
 
+  // 3. SYNC INPUT WITH URL (Handle Browser Back Button)
+  useEffect(() => {
+    setSearchInput(searchQuery);
+  }, [searchQuery]);
+
+  // 4. DEBOUNCE TYPING TO UPDATE URL
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      setSearchQuery(searchInput);
-      setPage(1);
+      // Only update URL if local input differs from URL param
+      if (searchInput !== searchQuery) {
+        updateParams({ search: searchInput, page: 1 });
+      }
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [searchInput]);
-
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPage(1);
-    setSearchQuery(searchInput);
-  };
+  }, [searchInput]); // removed searchQuery from dep to avoid race conditions
 
   const handleLogout = async () => {
     await logout();
@@ -263,7 +289,8 @@ const Dashboard = () => {
           <div className="flex items-center gap-2">
             <button
               disabled={page === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              // Update URL instead of local state
+              onClick={() => updateParams({ page: Math.max(1, page - 1) })}
               className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 page === 1
                   ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
@@ -277,7 +304,8 @@ const Dashboard = () => {
             </span>
             <button
               disabled={page >= totalPages}
-              onClick={() => setPage((p) => p + 1)}
+              // Update URL instead of local state
+              onClick={() => updateParams({ page: page + 1 })}
               className={`px-3 py-1.5 rounded-lg font-bold text-xs transition-all ${
                 page >= totalPages
                   ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-not-allowed"
@@ -312,6 +340,7 @@ const Dashboard = () => {
               type="text"
               placeholder="Search Username..."
               value={searchInput}
+              // Update local state (debounce effect will handle URL)
               onChange={(e) => setSearchInput(e.target.value)}
               className="w-full pl-10 bg-white dark:bg-slate-900 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-white text-sm rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 block p-2.5 outline-none transition-all"
             />
@@ -406,9 +435,10 @@ const Dashboard = () => {
               </p>
               {searchQuery && (
                 <button
+                  // Clear URL params
                   onClick={() => {
-                    setSearchQuery("");
                     setSearchInput("");
+                    updateParams({ search: "", page: 1 });
                   }}
                   className="mt-4 text-blue-600 hover:underline font-bold"
                 >
