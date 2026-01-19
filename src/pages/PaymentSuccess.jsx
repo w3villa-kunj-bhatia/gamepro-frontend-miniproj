@@ -6,7 +6,7 @@ import { useAuth } from "../auth/AuthContext";
 const PaymentSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth(); // If you have a way to refresh user data in context, do it here
+  const { user } = useAuth(); 
   const [status, setStatus] = useState("Verifying payment...");
 
   useEffect(() => {
@@ -21,10 +21,9 @@ const PaymentSuccess = () => {
         await api.post("/payment/verify", { session_id: sessionId });
         setStatus("Payment Successful! Upgrading your account...");
 
-        // Wait 2 seconds then go to dashboard
         setTimeout(() => {
           navigate("/dashboard");
-          window.location.reload(); // Reload to ensure auth context gets new plan data
+          window.location.reload(); 
         }, 2000);
       } catch (err) {
         console.error(err);

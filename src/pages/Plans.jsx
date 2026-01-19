@@ -101,12 +101,9 @@ const Plans = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white transition-colors duration-300 py-20 px-4">
-      {/* Header Section */}
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white transition-colors duration-300 py-8 px-4">
       <div className="max-w-7xl mx-auto text-center mb-16">
-        <h2 className="text-blue-600 dark:text-blue-400 font-bold tracking-wide uppercase text-sm mb-3">
-          Membership Tiers
-        </h2>
+
         <h1 className="text-4xl md:text-5xl font-black mb-6">
           Choose Your{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
@@ -117,10 +114,10 @@ const Plans = () => {
           Unlock more slots, exclusive badges, and extended session times.
           Upgrade your arsenal today.
         </p>
+        
       </div>
 
-      {/* Plans Grid */}
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {plans.map((plan) => {
           const isCurrentPlan = user?.plan === plan.id;
           const isGold = plan.id === "gold";
@@ -155,7 +152,6 @@ const Plans = () => {
                 </p>
               </div>
 
-              {/* Features List */}
               <ul className="space-y-4 mb-8 flex-1">
                 {plan.features.map((feature, idx) => (
                   <li
@@ -172,7 +168,6 @@ const Plans = () => {
                 ))}
               </ul>
 
-              {/* Action Button */}
               <button
                 onClick={() => handleUpgrade(plan.id)}
                 disabled={loading || isCurrentPlan || plan.id === "free"}
@@ -220,16 +215,7 @@ const Plans = () => {
             </div>
           );
         })}
-      </div>
-
-      {/* Footer Info */}
-      <div className="mt-20 text-center space-y-4">
-        <p className="text-gray-400 text-sm">
-          Secure payment via{" "}
-          <span className="font-bold text-gray-500">Stripe</span>. Cancel
-          anytime from your profile settings.
-        </p>
-      </div>
+      </div>      
     </div>
   );
 };

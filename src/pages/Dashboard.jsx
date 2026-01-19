@@ -349,9 +349,6 @@ const Dashboard = () => {
                       <h4 className="font-bold text-lg leading-tight truncate text-gray-900 dark:text-white">
                         {profile.username || "Anonymous Player"}
                       </h4>
-                      <span className="text-xs text-gray-400 font-mono">
-                        ID: {profile._id.slice(-4)}
-                      </span>
                     </div>
                   </div>
 

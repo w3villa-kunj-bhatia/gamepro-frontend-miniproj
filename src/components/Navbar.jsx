@@ -4,7 +4,6 @@ import { useAuth } from "../auth/AuthContext";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 
-// --- Icons (Simple SVGs) ---
 const HomeIcon = () => (
   <svg
     className="w-6 h-6"
@@ -69,7 +68,6 @@ const LogoutIcon = () => (
   </svg>
 );
 
-// --- Navbar Component ---
 const Navbar = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { user, logout, loading } = useAuth();
@@ -112,7 +110,6 @@ const Navbar = () => {
     return null;
   }
 
-  // --- Reusable Dock Item Component ---
   const DockItem = ({ to, onClick, icon, label, isActive, colorClass }) => {
     const baseClass =
       "group relative flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-110";
@@ -130,11 +127,9 @@ const Navbar = () => {
         >
           {icon}
         </div>
-        {/* Tooltip Label (Visible on Hover) */}
         <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none whitespace-nowrap">
           {label}
         </span>
-        {/* Dot indicator for active state */}
         {isActive && (
           <div
             className={`absolute -bottom-1 w-1 h-1 rounded-full ${colorClass.replace(
@@ -169,7 +164,6 @@ const Navbar = () => {
                       rounded-3xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]
                       ring-1 ring-black/5 dark:ring-white/10"
       >
-        {/* 1. Home / Logo */}
         <DockItem
           to="/"
           icon={<HomeIcon />}
@@ -178,10 +172,8 @@ const Navbar = () => {
           colorClass="text-blue-600 dark:text-blue-400"
         />
 
-        {/* Separator */}
         <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
 
-        {/* 2. Main App Links */}
         {user ? (
           <>
             <DockItem
@@ -200,10 +192,8 @@ const Navbar = () => {
               colorClass="text-amber-500"
             />
 
-            {/* Separator */}
             <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
 
-            {/* 3. User Actions */}
             <Link
               to="/profile"
               className="group relative mx-1 transition-all duration-300 hover:-translate-y-2 hover:scale-110"
@@ -232,7 +222,6 @@ const Navbar = () => {
             />
           </>
         ) : (
-          /* Guest View */
           <>
             <Link
               to="/login"
@@ -249,10 +238,8 @@ const Navbar = () => {
           </>
         )}
 
-        {/* Separator */}
         <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
 
-        {/* 4. Theme Toggle */}
         <button
           onClick={toggleTheme}
           className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-yellow-400 transition-all hover:-translate-y-1 hover:scale-110"
