@@ -1,8 +1,10 @@
 import { Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
+import { useAuth } from "../auth/AuthContext";
 
 const LandingPage = () => {
   const { isDarkMode } = useTheme();
+  const { user } = useAuth();
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-slate-950 transition-colors duration-300 font-sans overflow-x-hidden">
@@ -48,14 +50,14 @@ const LandingPage = () => {
 
           <div className="flex flex-col sm:flex-row justify-center gap-5 mb-20">
             <Link
-              to="/signup"
+              to={user ? "/profile" : "/signup"}
               className="group relative px-8 py-4 bg-blue-600 text-white rounded-2xl text-lg font-bold shadow-xl shadow-blue-600/30 hover:bg-blue-700 hover:-translate-y-1 transition-all overflow-hidden"
             >
               <span className="relative z-10">Initialize Profile</span>
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </Link>
             <Link
-              to="/login"
+              to={user ? "/dashboard" : "/login"}
               className="px-8 py-4 bg-white dark:bg-slate-900 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-slate-700 rounded-2xl text-lg font-bold hover:bg-gray-50 dark:hover:bg-slate-800 hover:-translate-y-1 transition-all shadow-lg"
             >
               Access Terminal

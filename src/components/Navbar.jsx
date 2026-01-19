@@ -4,6 +4,7 @@ import { useAuth } from "../auth/AuthContext";
 import { useEffect, useState } from "react";
 import api from "../api/axios";
 
+// --- Icons ---
 const HomeIcon = () => (
   <svg
     className="w-6 h-6"
@@ -64,6 +65,22 @@ const LogoutIcon = () => (
       strokeLinejoin="round"
       strokeWidth={2}
       d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+    />
+  </svg>
+);
+
+const AdminIcon = () => (
+  <svg
+    className="w-6 h-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
     />
   </svg>
 );
@@ -183,6 +200,17 @@ const Navbar = () => {
               isActive={location.pathname === "/dashboard"}
               colorClass="text-indigo-600 dark:text-indigo-400"
             />
+
+            {/* ✅ Admin Panel Button - Only visible if user.role === 'admin' */}
+            {user.role === "admin" && (
+              <DockItem
+                to="/admin/users"
+                icon={<AdminIcon />}
+                label="Admin Panel"
+                isActive={location.pathname.startsWith("/admin")}
+                colorClass="text-red-600 dark:text-red-400"
+              />
+            )}
 
             <DockItem
               to="/plans"
