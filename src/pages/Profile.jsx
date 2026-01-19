@@ -136,9 +136,9 @@ const Profile = () => {
     <div className="min-h-screen w-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
       <div
         id="profile-identity"
-        className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3 auto-rows-min"
+        className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min"
       >
-        <div className="md:col-span-1 lg:row-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col items-center shadow-xl relative overflow-hidden group ">
+        <div className="md:col-span-1 lg:col-span-1 lg:row-span-3 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-5 flex flex-col items-center shadow-xl relative overflow-hidden group ">
           <div
             className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace(
               "/10",
@@ -207,7 +207,7 @@ const Profile = () => {
         </div>
 
         <div
-          className={`md:col-span-2 lg:col-span-1 min-h-[160px] ${theme.bgColor} ${theme.borderColor} border rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]`}
+          className={`md:col-span-1 lg:col-span-1 min-h-[160px] ${theme.bgColor} ${theme.borderColor} border rounded-3xl p-6 flex flex-col items-center justify-center relative overflow-hidden group transition-all duration-300 hover:scale-[1.02]`}
         >
           <div
             className={`w-14 h-14 ${theme.iconBg} rounded-2xl flex items-center justify-center mb-3 shadow-lg ${theme.shadow} group-hover:rotate-12 transition-transform duration-500`}
@@ -274,7 +274,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="md:col-span-3 lg:col-span-3 bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 relative overflow-hidden flex items-center min-h-[70px]">
+        <div className="md:col-span-2 lg:col-span-3 bg-gray-100 dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-4 md:p-6 relative overflow-hidden flex items-center min-h-[70px]">
           <div
             className={`absolute left-0 top-0 bottom-0 w-1 ${theme.iconBg} opacity-80`}
           />
@@ -299,7 +299,7 @@ const Profile = () => {
             {limits.savedProfiles})
           </span>
 
-          <div className="grid grid-cols-3 gap-2 overflow-y-auto custom-scrollbar pr-2">
+          <div className="grid grid-cols-3 gap-3 overflow-y-auto custom-scrollbar pr-2">
             {savedProfiles.map((item, i) => {
               const isLocked = i >= limits.savedProfiles;
 
@@ -344,7 +344,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <div className="lg:col-span-2 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
+        <div className="md:col-span-1 lg:col-span-2 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
           <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
             {profile?.username}'s Squadron
           </span>
