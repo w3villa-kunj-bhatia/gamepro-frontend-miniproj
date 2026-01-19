@@ -48,6 +48,14 @@ const AppRoutes = () => {
         }
       />
       <Route
+        path="/saved"
+        element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/plans"
         element={
           <ProtectedRoute>
