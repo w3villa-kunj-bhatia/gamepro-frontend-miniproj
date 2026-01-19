@@ -1,8 +1,16 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  useLoadScript,
+  GoogleMap,
+  Marker,
+  Autocomplete,
+} from "@react-google-maps/api";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
+
+const libraries = ["places"];
 
 const SearchIcon = () => (
   <svg
@@ -21,6 +29,11 @@ const SearchIcon = () => (
 );
 
 const CreateProfile = () => {
+  const { isLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
+
   const [formData, setFormData] = useState({
     username: "",
     address: "",
@@ -37,6 +50,8 @@ const CreateProfile = () => {
   const [charResults, setCharResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  const autocompleteRef = useRef(null);
 
   const navigate = useNavigate();
   const { checkUser } = useAuth();
@@ -84,6 +99,27 @@ const CreateProfile = () => {
     }, 500);
     return () => clearTimeout(timer);
   }, [charSearch]);
+
+  const onPlaceChanged = () => {
+    if (autocompleteRef.current) {
+      const place = autocompleteRef.current.getPlace();
+
+      const address = place.formatted_address || "";
+      let lat = 0;
+      let lng = 0;
+
+      if (place.geometry && place.geometry.location) {
+        lat = place.geometry.location.lat();
+        lng = place.geometry.location.lng();
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        address,
+        coordinates: { lat, lng },
+      }));
+    }
+  };
 
   const addGame = (game) => {
     const cover =
@@ -154,7 +190,7 @@ const CreateProfile = () => {
     }
   };
 
-  if (loading) return <Loader />;
+  if (loading || !isLoaded) return <Loader />;
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 pt-24 pb-12 overflow-y-auto">
@@ -196,14 +232,39 @@ const CreateProfile = () => {
               <label className="text-xs text-slate-400 font-semibold ml-1 mb-1 block">
                 Base Location
               </label>
-              <input
-                value={formData.address}
-                placeholder="e.g. New York, NY"
-                className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600"
-                onChange={(e) =>
-                  setFormData({ ...formData, address: e.target.value })
+
+              <Autocomplete
+                onLoad={(autocomplete) =>
+                  (autocompleteRef.current = autocomplete)
                 }
-              />
+                onPlaceChanged={onPlaceChanged}
+              >
+                <input
+                  required
+                  value={formData.address}
+                  placeholder="Start typing your city..."
+                  className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600 mb-3"
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
+                />
+              </Autocomplete>
+
+              {formData.coordinates.lat !== 0 && (
+                <div className="w-full h-48 rounded-xl overflow-hidden border border-slate-700 shadow-inner">
+                  <GoogleMap
+                    mapContainerStyle={{ width: "100%", height: "100%" }}
+                    center={formData.coordinates}
+                    zoom={13}
+                    options={{
+                      disableDefaultUI: true,
+                      zoomControl: true,
+                    }}
+                  >
+                    <Marker position={formData.coordinates} />
+                  </GoogleMap>
+                </div>
+              )}
             </div>
 
             <div className="p-4 bg-slate-800/30 rounded-xl border border-slate-800/50">

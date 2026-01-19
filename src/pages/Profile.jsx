@@ -1,10 +1,93 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+
+const libraries = ["places"];
+
+const mapStyles = [
+  {
+    elementType: "geometry",
+    stylers: [{ color: "#242f3e" }],
+  },
+  {
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#242f3e" }],
+  },
+  {
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#746855" }],
+  },
+  {
+    featureType: "administrative.locality",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#d59563" }],
+  },
+  {
+    featureType: "poi",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#d59563" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "geometry",
+    stylers: [{ color: "#263c3f" }],
+  },
+  {
+    featureType: "poi.park",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#6b9a76" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry",
+    stylers: [{ color: "#38414e" }],
+  },
+  {
+    featureType: "road",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#212a37" }],
+  },
+  {
+    featureType: "road",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#9ca5b3" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry",
+    stylers: [{ color: "#746855" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "geometry.stroke",
+    stylers: [{ color: "#1f2835" }],
+  },
+  {
+    featureType: "road.highway",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#f3d19c" }],
+  },
+  {
+    featureType: "water",
+    elementType: "geometry",
+    stylers: [{ color: "#17263c" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.fill",
+    stylers: [{ color: "#515c6d" }],
+  },
+  {
+    featureType: "water",
+    elementType: "labels.text.stroke",
+    stylers: [{ color: "#17263c" }],
+  },
+];
 
 const Profile = () => {
   const { user: authUser } = useAuth();
@@ -12,6 +95,11 @@ const Profile = () => {
   const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+
+  const { isLoaded: isMapLoaded } = useLoadScript({
+    googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
+    libraries,
+  });
 
   const plansConfig = {
     free: { games: 3, savedProfiles: 3 },
@@ -45,7 +133,6 @@ const Profile = () => {
 
     try {
       setIsDownloading(true);
-
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(element, {
@@ -62,7 +149,6 @@ const Profile = () => {
             usernameEl.style.whiteSpace = "normal";
             usernameEl.style.height = "auto";
           }
-
           const profileCard = clonedDoc.querySelector(
             "#profile-identity > div:first-child"
           );
@@ -70,7 +156,6 @@ const Profile = () => {
             profileCard.style.backgroundColor = "#0f172a";
             profileCard.style.backdropFilter = "none";
           }
-
           const badgeEl = clonedDoc.querySelector(".absolute.bottom-2.right-2");
           if (badgeEl) {
             badgeEl.style.zIndex = "50";
@@ -132,6 +217,10 @@ const Profile = () => {
 
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
+  const hasCoordinates =
+    profile?.coordinates &&
+    (profile.coordinates.lat !== 0 || profile.coordinates.lng !== 0);
+
   return (
     <div className="min-h-screen w-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
       <div
@@ -147,7 +236,7 @@ const Profile = () => {
           />
 
           <div className="text-center w-full relative z-10 flex-1 flex flex-col items-center">
-            <div className="relative inline-block mb-6 mt-4">
+            <div className="relative inline-block mb-10 mt-4">
               <img
                 src={
                   profile?.avatar ||
@@ -168,11 +257,11 @@ const Profile = () => {
             <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full text-gray-900 dark:text-white">
               {profile?.username || "Operative"}
             </h2>
-            <p className="text-indigo-600 dark:text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-3">
+            <p className="text-indigo-600 dark:text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-12">
               System Level: {currentPlan}
             </p>
 
-            <div className="mt-12 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-6">
+            <div className="mt-12 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-12">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">📍</span>
                 <p className="text-gray-600 dark:text-slate-300 text-md font-medium truncate">
@@ -180,11 +269,29 @@ const Profile = () => {
                 </p>
               </div>
 
-              <div className="mt-5 aspect-video w-full bg-gray-200 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden">
-                <div className="absolute inset-0 opacity-20 bg-[url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png')] bg-cover bg-center grayscale" />
-                <span className="relative z-10 text-[8px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest bg-white/80 dark:bg-slate-950/80 px-2 py-1 rounded">
-                  Map Synchronization Pending
-                </span>
+              <div className="mt-5 aspect-video w-full bg-gray-200 dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 flex flex-col items-center justify-center relative overflow-hidden shadow-inner">
+                {isMapLoaded && hasCoordinates ? (
+                  <GoogleMap
+                    mapContainerStyle={{ width: "100%", height: "100%" }}
+                    center={profile.coordinates}
+                    zoom={13}
+                    options={{
+                      disableDefaultUI: true,
+                      styles: mapStyles,
+                    }}
+                  >
+                    <Marker position={profile.coordinates} />
+                  </GoogleMap>
+                ) : (
+                  <>
+                    <div className="absolute inset-0 opacity-20 bg-[url('https://www.google.com/maps/about/images/mymaps/mymaps-desktop-16x9.png')] bg-cover bg-center grayscale" />
+                    <span className="relative z-10 text-[8px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest bg-white/80 dark:bg-slate-950/80 px-2 py-1 rounded">
+                      {isMapLoaded
+                        ? "Coordinates Not Found"
+                        : "Map Synchronization Pending"}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
 
@@ -225,7 +332,7 @@ const Profile = () => {
         </div>
 
         <div className="md:col-span-2 lg:col-span-2 bg-white dark:bg-slate-900/50 backdrop-blur-sm border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 overflow-hidden relative">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-8">
             <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest">
               {profile?.username}'s Favourite Games (
               {profile?.games?.length || 0} / {limits.games})
@@ -294,7 +401,7 @@ const Profile = () => {
         </div>
 
         <div className="md:col-span-1 lg:col-span-1 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col max-h-[320px]">
-          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4 shrink-0">
+          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-6 shrink-0">
             {profile?.username}'s Network ({savedProfiles.length} /{" "}
             {limits.savedProfiles})
           </span>
@@ -345,7 +452,7 @@ const Profile = () => {
         </div>
 
         <div className="md:col-span-1 lg:col-span-2 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
-          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-4">
+          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-6">
             {profile?.username}'s Squadron
           </span>
 
