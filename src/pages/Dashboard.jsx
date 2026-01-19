@@ -9,7 +9,7 @@ const Dashboard = () => {
 
   const [profiles, setProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
-
+  const [myReactions, setMyReactions] = useState({});
   const [mySavedIds, setMySavedIds] = useState(new Set());
   const [myStats, setMyStats] = useState({
     gamesCount: 0,
