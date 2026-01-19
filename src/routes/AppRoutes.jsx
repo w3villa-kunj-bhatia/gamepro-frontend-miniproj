@@ -6,7 +6,6 @@ import Signup from "../pages/Signup";
 import VerifyEmail from "../pages/VerifyEmail";
 import Dashboard from "../pages/Dashboard";
 import Profile from "../pages/Profile";
-import SavedProfiles from "../pages/SavedProfiles";
 import Plans from "../pages/Plans";
 import Users from "../pages/admin/Users";
 import PaymentSuccess from "../pages/PaymentSuccess";
@@ -45,14 +44,6 @@ const AppRoutes = () => {
         element={
           <ProtectedRoute key="profile">
             <Profile />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/saved"
-        element={
-          <ProtectedRoute>
-            <SavedProfiles />
           </ProtectedRoute>
         }
       />
