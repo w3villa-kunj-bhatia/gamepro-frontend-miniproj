@@ -47,12 +47,14 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+const handleGoogleLogin = () => {
+    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseURL}/auth/google`;
   };
 
   const handleFacebookLogin = () => {
-    window.location.href = "http://localhost:5000/api/auth/facebook";
+    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseURL}/auth/facebook`;
   };
 
   return (

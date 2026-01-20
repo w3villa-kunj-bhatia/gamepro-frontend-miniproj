@@ -14,7 +14,7 @@ const Signup = () => {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); 
+    setError("");
   };
 
   const handleSubmit = async (e) => {
@@ -34,7 +34,7 @@ const Signup = () => {
       setSuccess(true);
     } catch (err) {
       setError(
-        err.response?.data?.message || "Signup failed. Please try again."
+        err.response?.data?.message || "Signup failed. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -42,11 +42,13 @@ const Signup = () => {
   };
 
   const handleGoogleSignup = () => {
-    window.location.href = "http://localhost:5000/api/auth/google";
+    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseURL}/auth/google`;
   };
 
   const handleFacebookSignup = () => {
-    window.location.href = "http://localhost:5000/api/auth/facebook";
+    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    window.location.href = `${baseURL}/auth/facebook`;
   };
 
   if (success) {
