@@ -4,7 +4,7 @@ const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const api = axios.create({
   baseURL: baseURL,
-  withCredentials: true, 
+  withCredentials: true,
 });
 
 api.interceptors.response.use(
@@ -26,7 +26,7 @@ api.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 export default api;
