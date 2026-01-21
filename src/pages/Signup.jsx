@@ -13,7 +13,6 @@ const Signup = () => {
     confirmPassword: "",
   });
 
-  // Track password validity
   const [passwordCriteria, setPasswordCriteria] = useState({
     hasUpper: false,
     hasNumber: false,
@@ -25,7 +24,6 @@ const Signup = () => {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
   useEffect(() => {
     if (!authLoading && user) {
       navigate("/dashboard");
@@ -36,7 +34,7 @@ const Signup = () => {
     setPasswordCriteria({
       hasUpper: /[A-Z]/.test(password),
       hasNumber: /\d/.test(password),
-      hasSpecial: /[\W_]/.test(password), // Checks for special chars
+      hasSpecial: /[\W_]/.test(password), 
       hasLength: password.length >= 8,
     });
   };
@@ -46,7 +44,6 @@ const Signup = () => {
     setFormData({ ...formData, [name]: value });
     setError("");
 
-    // Run validation immediately when password changes
     if (name === "password") {
       checkPassword(value);
     }
@@ -55,7 +52,6 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 1. Check if all password criteria are met
     const allCriteriaMet = Object.values(passwordCriteria).every(Boolean);
     if (!allCriteriaMet) {
       return setError("Please meet all password requirements below.");
@@ -68,6 +64,7 @@ const Signup = () => {
 
     setLoading(true);
     try {
+      // The backend now correctly hashes this password before saving
       await api.post("/auth/signup", {
         email: formData.email,
         password: formData.password,
@@ -75,6 +72,7 @@ const Signup = () => {
 
       setSuccess(true);
     } catch (err) {
+      console.error(err);
       setError(
         err.response?.data?.message || "Signup failed. Please try again.",
       );
@@ -83,14 +81,18 @@ const Signup = () => {
     }
   };
 
+  // Helper to safely get the API URL without double slashes
+  const getApiBaseUrl = () => {
+    const url = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+    return url.replace(/\/$/, ""); // Removes trailing slash if present
+  };
+
   const handleGoogleSignup = () => {
-    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-    window.location.href = `${baseURL}/auth/google`;
+    window.location.href = `${getApiBaseUrl()}/auth/google`;
   };
 
   const handleFacebookSignup = () => {
-    const baseURL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-    window.location.href = `${baseURL}/auth/facebook`;
+    window.location.href = `${getApiBaseUrl()}/auth/facebook`;
   };
 
   if (success) {
@@ -224,6 +226,7 @@ const Signup = () => {
             onClick={handleGoogleSignup}
             className="w-full p-2 text-white bg-red-600 rounded hover:bg-red-700 font-semibold flex justify-center items-center gap-2"
           >
+            {/* Google Icon */}
             <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
             </svg>
@@ -235,6 +238,7 @@ const Signup = () => {
             onClick={handleFacebookSignup}
             className="w-full p-2 text-white bg-[#1877F2] rounded hover:bg-[#166fe5] font-semibold flex justify-center items-center gap-2"
           >
+            {/* Facebook Icon */}
             <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.791-4.647 4.504-4.647 1.299 0 2.657.232 2.657.232v2.922h-1.497c-1.49 0-1.956.925-1.956 1.874v2.25h3.297l-.527 3.47h-2.77v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
