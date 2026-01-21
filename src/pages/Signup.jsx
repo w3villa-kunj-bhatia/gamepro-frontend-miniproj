@@ -1,25 +1,67 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/AuthContext";
 import api from "../api/axios";
 
 const Signup = () => {
+  const { user, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
     confirmPassword: "",
   });
+
+  // Track password validity
+  const [passwordCriteria, setPasswordCriteria] = useState({
+    hasUpper: false,
+    hasNumber: false,
+    hasSpecial: false,
+    hasLength: false,
+  });
+
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate("/dashboard");
+    }
+  }, [user, authLoading, navigate]);
+
+  const checkPassword = (password) => {
+    setPasswordCriteria({
+      hasUpper: /[A-Z]/.test(password),
+      hasNumber: /\d/.test(password),
+      hasSpecial: /[\W_]/.test(password), // Checks for special chars
+      hasLength: password.length >= 8,
+    });
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
     setError("");
+
+    // Run validation immediately when password changes
+    if (name === "password") {
+      checkPassword(value);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // 1. Check if all password criteria are met
+    const allCriteriaMet = Object.values(passwordCriteria).every(Boolean);
+    if (!allCriteriaMet) {
+      return setError("Please meet all password requirements below.");
+    }
+
+    // 2. Check if passwords match
     if (formData.password !== formData.confirmPassword) {
       return setError("Passwords do not match");
     }
@@ -104,6 +146,47 @@ const Signup = () => {
               value={formData.password}
               onChange={handleChange}
             />
+
+            {/* --- PASSWORD STRENGTH INDICATORS --- */}
+            <div className="mt-2 text-xs space-y-1">
+              <p
+                className={
+                  passwordCriteria.hasLength
+                    ? "text-green-600"
+                    : "text-gray-500"
+                }
+              >
+                {passwordCriteria.hasLength ? "✔" : "○"} At least 8 characters
+              </p>
+              <p
+                className={
+                  passwordCriteria.hasUpper ? "text-green-600" : "text-gray-500"
+                }
+              >
+                {passwordCriteria.hasUpper ? "✔" : "○"} At least 1 Uppercase
+                Letter
+              </p>
+              <p
+                className={
+                  passwordCriteria.hasNumber
+                    ? "text-green-600"
+                    : "text-gray-500"
+                }
+              >
+                {passwordCriteria.hasNumber ? "✔" : "○"} At least 1 Number
+              </p>
+              <p
+                className={
+                  passwordCriteria.hasSpecial
+                    ? "text-green-600"
+                    : "text-gray-500"
+                }
+              >
+                {passwordCriteria.hasSpecial ? "✔" : "○"} At least 1 Special
+                Character (!@#$...)
+              </p>
+            </div>
+            {/* ------------------------------------ */}
           </div>
 
           <div>
