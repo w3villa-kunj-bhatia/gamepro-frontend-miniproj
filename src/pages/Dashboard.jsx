@@ -2,7 +2,202 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import toast from "react-hot-toast"; 
+import toast from "react-hot-toast";
+
+const planConfigs = {
+  gold: {
+    emoji: "👑",
+    label: "Gold Member",
+    color: "text-amber-500",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/20",
+    bar: "bg-amber-500",
+    bgColor: "bg-amber-500/10",
+    borderColor: "border-amber-500/20",
+    iconBg: "bg-amber-500",
+    shadow: "shadow-amber-500/20",
+    textColor: "text-amber-600 dark:text-amber-500",
+    gradient: "from-amber-500/20 to-transparent",
+  },
+  silver: {
+    emoji: "⚔️",
+    label: "Silver Member",
+    color: "text-slate-400",
+    bg: "bg-slate-400/10",
+    border: "border-slate-400/20",
+    bar: "bg-slate-400",
+    bgColor: "bg-slate-300/10",
+    borderColor: "border-slate-300/20",
+    iconBg: "bg-slate-400",
+    shadow: "shadow-slate-400/20",
+    textColor: "text-slate-500 dark:text-slate-300",
+    gradient: "from-slate-400/20 to-transparent",
+  },
+  free: {
+    emoji: "💪",
+    label: "Free Member",
+    color: "text-indigo-500",
+    bg: "bg-indigo-500/10",
+    border: "border-indigo-500/20",
+    bar: "bg-indigo-500",
+    bgColor: "bg-indigo-600/10",
+    borderColor: "border-indigo-600/20",
+    iconBg: "bg-indigo-600",
+    shadow: "shadow-indigo-600/20",
+    textColor: "text-indigo-600 dark:text-indigo-400",
+    gradient: "from-indigo-600/20 to-transparent",
+  },
+};
+
+const ProfileModal = ({ profile, onClose }) => {
+  if (!profile) return null;
+
+  const currentPlan = profile.plan || "free";
+  const theme = planConfigs[currentPlan] || planConfigs.free;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+      <div
+        className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors border border-white/10"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700/50 bg-slate-900/50">
+          <div
+            className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
+          />
+
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="relative mb-6">
+              <img
+                src={
+                  profile.avatar ||
+                  `https://ui-avatars.com/api/?name=${profile.username}&background=random`
+                }
+                alt={profile.username}
+                className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-slate-800`}
+              />
+              <div
+                className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
+              >
+                {theme.emoji}
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-black text-white uppercase tracking-tighter text-center">
+              {profile.username}
+            </h2>
+            <span
+              className={`mt-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
+            >
+              {theme.label}
+            </span>
+
+            {profile.address && (
+              <div className="flex items-center gap-2 mt-6 text-slate-400 text-sm font-medium bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700">
+                <span>📍</span> {profile.address}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="w-full md:w-2/3 p-8 bg-slate-900 relative overflow-y-auto max-h-[70vh]">
+          <div className="space-y-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+                <span className="text-xl">🎮</span>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                  Identified Games ({profile.games?.length || 0})
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
+                {profile.games?.length > 0 ? (
+                  profile.games.map((g, i) => (
+                    <div key={i} className="group relative">
+                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-slate-700 shadow-md transition-all group-hover:border-indigo-500/50">
+                        <img
+                          src={g.coverUrl}
+                          alt={g.name}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl p-1 pointer-events-none">
+                        <span className="text-[10px] text-white text-center font-bold leading-tight">
+                          {g.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="col-span-full text-slate-600 text-sm italic py-4">
+                    No games public.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+                <span className="text-xl">👥</span>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                  Top Agents
+                </h3>
+              </div>
+
+              <div className="flex flex-wrap gap-3">
+                {profile.topCharacters?.length > 0 ? (
+                  profile.topCharacters.map((c, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-3 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700 hover:border-indigo-500/50 transition-colors"
+                    >
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="w-10 h-10 rounded-lg object-cover bg-slate-900"
+                      />
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-slate-300 leading-tight">
+                          {c.name}
+                        </span>
+                        <span className="text-[10px] text-slate-500 uppercase">
+                          Deployed
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-600 text-sm italic py-4">
+                    No agents deployed.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -23,36 +218,9 @@ const Dashboard = () => {
   });
 
   const [totalPages, setTotalPages] = useState(1);
-
   const [searchInput, setSearchInput] = useState(searchQuery);
+  const [selectedProfile, setSelectedProfile] = useState(null);
   const LIMIT = 6;
-
-  const planConfigs = {
-    gold: {
-      emoji: "👑",
-      label: "Gold Member",
-      color: "text-amber-500",
-      bg: "bg-amber-500/10",
-      border: "border-amber-500/20",
-      bar: "bg-amber-500",
-    },
-    silver: {
-      emoji: "⚔️",
-      label: "Silver Member",
-      color: "text-slate-400",
-      bg: "bg-slate-400/10",
-      border: "border-slate-400/20",
-      bar: "bg-slate-400",
-    },
-    free: {
-      emoji: "💪",
-      label: "Free Member",
-      color: "text-indigo-500",
-      bg: "bg-indigo-500/10",
-      border: "border-indigo-500/20",
-      bar: "bg-indigo-500",
-    },
-  };
 
   const currentPlan = user?.plan || "free";
   const theme = planConfigs[currentPlan] || planConfigs.free;
@@ -129,6 +297,7 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [page, searchQuery]);
+
   useEffect(() => {
     setSearchInput(searchQuery);
   }, [searchQuery]);
@@ -170,7 +339,8 @@ const Dashboard = () => {
     }
   };
 
-  const handleToggleSave = async (profileId) => {
+  const handleToggleSave = async (profileId, e) => {
+    e.stopPropagation();
     const isSaved = mySavedIds.has(profileId);
     try {
       if (isSaved) {
@@ -181,12 +351,12 @@ const Dashboard = () => {
           return newSet;
         });
         setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount - 1 }));
-        toast.success("Operative removed from squadron."); 
+        toast.success("Operative removed from squadron.");
       } else {
         await api.post(`/saved-profiles/${profileId}`);
         setMySavedIds((prev) => new Set(prev).add(profileId));
         setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount + 1 }));
-        toast.success("Operative added to your squadron."); 
+        toast.success("Operative added to your squadron.");
       }
     } catch (err) {
       console.error("Failed to toggle save profile:", err);
@@ -347,27 +517,45 @@ const Dashboard = () => {
               const isSaved = mySavedIds.has(profile._id);
               if (profile._id === user?._id) return null;
 
+              const cardPlan = profile.plan || "free";
+              const cardTheme = planConfigs[cardPlan] || planConfigs.free;
+
               return (
                 <div
                   key={profile._id}
-                  className="p-5 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 relative group"
+                  onClick={() => setSelectedProfile(profile)}
+                  className="p-5 bg-white dark:bg-slate-900 shadow-sm hover:shadow-xl rounded-2xl border border-gray-200 dark:border-slate-800 hover:border-indigo-500/50 transition-all duration-300 relative group cursor-pointer"
                 >
                   <div className="flex items-center mb-4">
-                    {profile.avatar ? (
-                      <img
-                        src={profile.avatar}
-                        alt={profile.username}
-                        className="h-12 w-12 rounded-full object-cover mr-4 border-2 border-gray-100 dark:border-slate-700 group-hover:border-indigo-500 transition-colors"
-                      />
-                    ) : (
-                      <div className="h-12 w-12 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center font-bold mr-4 text-xl border-2 border-transparent group-hover:border-indigo-500 transition-all">
-                        {profile.username?.charAt(0).toUpperCase() || "P"}
+                    <div className="relative mr-4">
+                      {profile.avatar ? (
+                        <img
+                          src={profile.avatar}
+                          alt={profile.username}
+                          className="h-12 w-12 rounded-full object-cover border-2 border-gray-100 dark:border-slate-700 group-hover:border-indigo-500 transition-colors"
+                        />
+                      ) : (
+                        <div className="h-12 w-12 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center font-bold text-xl border-2 border-transparent group-hover:border-indigo-500 transition-all">
+                          {profile.username?.charAt(0).toUpperCase() || "P"}
+                        </div>
+                      )}
+
+                      <div
+                        className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] shadow-sm border border-slate-900 ${cardTheme.iconBg} text-white`}
+                      >
+                        {cardTheme.emoji}
                       </div>
-                    )}
+                    </div>
+
                     <div className="overflow-hidden">
                       <h4 className="font-bold text-lg leading-tight truncate text-gray-900 dark:text-white">
                         {profile.username || "Anonymous Player"}
                       </h4>
+                      <p
+                        className={`text-[10px] font-bold uppercase tracking-wider ${cardTheme.color}`}
+                      >
+                        {cardTheme.label}
+                      </p>
                     </div>
                   </div>
 
@@ -381,7 +569,10 @@ const Dashboard = () => {
                   <div className="flex justify-between items-center border-t border-gray-100 dark:border-slate-800 pt-4 mt-2">
                     <div className="flex gap-4">
                       <button
-                        onClick={() => handleReaction(profile._id, "like")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReaction(profile._id, "like");
+                        }}
                         className={`flex items-center transition text-sm font-bold gap-1 ${
                           myReactions[profile._id] === "like"
                             ? "text-green-600 dark:text-green-400"
@@ -391,7 +582,10 @@ const Dashboard = () => {
                         👍 {profile.likes || 0}
                       </button>
                       <button
-                        onClick={() => handleReaction(profile._id, "dislike")}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReaction(profile._id, "dislike");
+                        }}
                         className={`flex items-center transition text-sm font-bold gap-1 ${
                           myReactions[profile._id] === "dislike"
                             ? "text-red-500 dark:text-red-400"
@@ -403,7 +597,7 @@ const Dashboard = () => {
                     </div>
 
                     <button
-                      onClick={() => handleToggleSave(profile._id)}
+                      onClick={(e) => handleToggleSave(profile._id, e)}
                       className={`px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all shadow-md ${
                         isSaved
                           ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 hover:content-['Unsave']"
@@ -438,6 +632,13 @@ const Dashboard = () => {
       )}
 
       <div className="h-24 w-full"></div>
+
+      {selectedProfile && (
+        <ProfileModal
+          profile={selectedProfile}
+          onClose={() => setSelectedProfile(null)}
+        />
+      )}
     </div>
   );
 };
