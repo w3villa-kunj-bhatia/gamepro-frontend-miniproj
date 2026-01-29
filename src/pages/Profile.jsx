@@ -90,6 +90,139 @@ const mapStyles = [
   },
 ];
 
+const ProfileModal = ({ profile, onClose, planConfigs }) => {
+  if (!profile) return null;
+
+  const currentPlan = profile.plan || "free";
+  const theme = planConfigs[currentPlan] || planConfigs.free;
+
+  return (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div
+        className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace("/10", "/20")} to-transparent`}
+        />
+
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
+        >
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div className="relative z-10 p-8 flex flex-col items-center">
+          <div className="relative mb-4">
+            <img
+              src={
+                profile.avatar ||
+                `https://ui-avatars.com/api/?name=${profile.username}&background=random`
+              }
+              alt={profile.username}
+              className={`w-28 h-28 rounded-full border-4 ${theme.borderColor} shadow-xl object-cover bg-slate-800`}
+            />
+            <div
+              className={`absolute bottom-0 right-0 w-8 h-8 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-sm shadow-lg`}
+            >
+              {theme.emoji}
+            </div>
+          </div>
+
+          <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-1">
+            {profile.username}
+          </h2>
+          <span
+            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
+          >
+            {theme.label}
+          </span>
+
+          {profile.address && (
+            <div className="flex items-center gap-2 mt-4 text-slate-400 text-xs font-medium">
+              <span>📍</span> {profile.address}
+            </div>
+          )}
+
+          <div className="w-full mt-8 space-y-6">
+            <div>
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
+                Identified Games ({profile.games?.length || 0})
+              </h3>
+              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+                {profile.games?.length > 0 ? (
+                  profile.games.map((g, i) => (
+                    <div key={i} className="flex-shrink-0 w-16 group relative">
+                      <div className="aspect-[3/4] rounded-lg overflow-hidden border border-slate-700">
+                        <img
+                          src={g.coverUrl}
+                          alt={g.name}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg">
+                        <span className="text-[8px] text-white text-center font-bold px-1">
+                          {g.name}
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-600 text-xs italic">
+                    No games public.
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
+                Top Agents
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.topCharacters?.length > 0 ? (
+                  profile.topCharacters.map((c, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded-full border border-slate-700"
+                    >
+                      <img
+                        src={c.imageUrl}
+                        alt={c.name}
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                      <span className="text-[10px] font-bold text-slate-300">
+                        {c.name}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-slate-600 text-xs italic">
+                    No agents deployed.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Profile = () => {
   const { user: authUser } = useAuth();
   const [profile, setProfile] = useState(null);
@@ -97,6 +230,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
+
+  const [selectedProfile, setSelectedProfile] = useState(null);
 
   const { isLoaded: isMapLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -294,7 +429,7 @@ const Profile = () => {
                 System Level: {currentPlan}
               </p>
               {timeLeft && (
-                <span className="mt-2 text-[12px] font-mono text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
+                <span className="mt-1 text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
                   ⏳ Expires: {timeLeft}
                 </span>
               )}
@@ -452,9 +587,10 @@ const Profile = () => {
               return (
                 <div
                   key={item._id}
+                  onClick={() => !isLocked && setSelectedProfile(item.profile)}
                   className={`relative group aspect-square rounded-2xl overflow-visible border-2 transition-all shrink-0 ${
                     isLocked
-                      ? "border-red-900/30 overflow-hidden"
+                      ? "border-red-900/30 overflow-hidden cursor-not-allowed"
                       : "border-gray-200 dark:border-slate-700 hover:border-indigo-500 cursor-pointer"
                   }`}
                 >
@@ -472,26 +608,11 @@ const Profile = () => {
                   />
 
                   {!isLocked && (
-                    <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-32 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 shadow-2xl flex flex-col items-center">
-                      <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-500 mb-2">
-                        <img
-                          src={
-                            item.profile?.avatar ||
-                            `https://ui-avatars.com/api/?name=${item.profile?.username}`
-                          }
-                          className="w-full h-full object-cover"
-                          alt="Mini Avatar"
-                        />
-                      </div>
-                      <p className="text-[10px] font-bold text-white text-center truncate w-full">
-                        {item.profile?.username}
+                    <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
+                      <p className="text-[10px] font-bold text-white text-center">
+                        Click to View
                       </p>
-                      <div className="w-full h-px bg-slate-700/50 my-1"></div>
-                      <span className="text-[8px] text-indigo-400 font-bold uppercase tracking-wider">
-                        Operative
-                      </span>
-
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/90"></div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900/90"></div>
                     </div>
                   )}
 
@@ -545,6 +666,14 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {selectedProfile && (
+        <ProfileModal
+          profile={selectedProfile}
+          onClose={() => setSelectedProfile(null)}
+          planConfigs={planConfigs}
+        />
+      )}
     </div>
   );
 };
