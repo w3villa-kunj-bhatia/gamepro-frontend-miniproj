@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"; 
 import api from "../api/axios";
 
 const CheckIcon = ({ className }) => (
@@ -87,13 +88,13 @@ const Plans = () => {
       if (res.data?.data?.url) {
         window.location.href = res.data.data.url;
       } else {
-        alert("Failed to initialize payment gateway.");
+        toast.error("Failed to initialize payment gateway."); 
       }
     } catch (err) {
       console.error("Upgrade failed", err);
       const msg =
         err.response?.data?.message || "Payment initialization failed.";
-      alert(msg);
+      toast.error(msg); 
     } finally {
       setLoadingPlan(null);
     }

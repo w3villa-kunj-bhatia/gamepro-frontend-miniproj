@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLoadScript, GoogleMap, Autocomplete } from "@react-google-maps/api";
+import toast from "react-hot-toast"; // Import toast
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
@@ -203,13 +204,13 @@ const CreateProfile = () => {
 
       const res = await api.post("/profile", dataToSend);
       if (res.status === 200 || res.status === 201) {
+        toast.success("Profile saved successfully!"); // Added Success Toast
         await checkUser();
         navigate("/profile");
       }
     } catch (err) {
-      alert(
-        `Error: ${err.response?.data?.message || "Failed to save profile."}`,
-      );
+      // Replaced alert with toast.error
+      toast.error(err.response?.data?.message || "Failed to save profile.");
     } finally {
       setSaving(false);
     }

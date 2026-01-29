@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast"; 
 import axios from "../../api/axios";
 import Loader from "../../components/Loader";
 
@@ -39,6 +40,7 @@ const Users = () => {
       setPagination(res.data.data.pagination);
     } catch (err) {
       console.error("Error fetching users:", err);
+      toast.error("Failed to fetch users"); 
     } finally {
       setLoading(false);
     }
@@ -67,9 +69,10 @@ const Users = () => {
   const handleToggleBlock = async (userId) => {
     try {
       await axios.patch(`/admin/users/${userId}/status`);
+      toast.success("User status updated successfully"); 
       fetchUsers(page);
     } catch (err) {
-      alert("Failed to update status");
+      toast.error("Failed to update status"); 
     }
   };
 

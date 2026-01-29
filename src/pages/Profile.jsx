@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
+import toast from "react-hot-toast";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
@@ -150,7 +151,7 @@ const Profile = () => {
             usernameEl.style.height = "auto";
           }
           const profileCard = clonedDoc.querySelector(
-            "#profile-identity > div:first-child"
+            "#profile-identity > div:first-child",
           );
           if (profileCard) {
             profileCard.style.backgroundColor = "#0f172a";
@@ -172,9 +173,10 @@ const Profile = () => {
 
       pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
       pdf.save(`${profile.username || "Operative"}_Identity.pdf`);
+      toast.success("Identity profile downloaded successfully.");
     } catch (error) {
       console.error("PDF Generation Error:", error);
-      alert("Failed to generate PDF. Check console for details.");
+      toast.error("Failed to generate PDF. Check console for details.");
     } finally {
       setIsDownloading(false);
     }
@@ -231,7 +233,7 @@ const Profile = () => {
           <div
             className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace(
               "/10",
-              "/5"
+              "/5",
             )} to-transparent opacity-50`}
           />
 
