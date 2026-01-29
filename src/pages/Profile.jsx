@@ -429,7 +429,7 @@ const Profile = () => {
                 System Level: {currentPlan}
               </p>
               {timeLeft && (
-                <span className="mt-1 text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
+                <span className="mt-2 text-[12px] font-mono text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded border border-amber-200 dark:border-amber-800/50">
                   ⏳ Expires: {timeLeft}
                 </span>
               )}
