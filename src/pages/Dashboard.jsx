@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api from "../api/axios";
 import { useAuth } from "../auth/AuthContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast"; 
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -86,7 +87,7 @@ const Dashboard = () => {
         ]);
 
         const savedIds = new Set(
-          savedRes.data.data.map((item) => item.profile._id)
+          savedRes.data.data.map((item) => item.profile._id),
         );
         setMySavedIds(savedIds);
 
@@ -110,7 +111,7 @@ const Dashboard = () => {
           : "";
 
         const res = await api.get(
-          `/dashboard/profiles?page=${page}&limit=${LIMIT}${queryParam}`
+          `/dashboard/profiles?page=${page}&limit=${LIMIT}${queryParam}`,
         );
 
         if (res.data?.data) {
@@ -162,7 +163,7 @@ const Dashboard = () => {
             };
           }
           return p;
-        })
+        }),
       );
     } catch (err) {
       console.error(`Failed to ${type} profile:`, err);
@@ -180,16 +181,17 @@ const Dashboard = () => {
           return newSet;
         });
         setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount - 1 }));
+        toast.success("Operative removed from squadron."); 
       } else {
         await api.post(`/saved-profiles/${profileId}`);
         setMySavedIds((prev) => new Set(prev).add(profileId));
         setMyStats((prev) => ({ ...prev, savedCount: prev.savedCount + 1 }));
-        alert("Operative added to your squadron.");
+        toast.success("Operative added to your squadron."); 
       }
     } catch (err) {
       console.error("Failed to toggle save profile:", err);
       const msg = err.response?.data?.message || "Action failed.";
-      alert(msg);
+      toast.error(msg);
     }
   };
 
