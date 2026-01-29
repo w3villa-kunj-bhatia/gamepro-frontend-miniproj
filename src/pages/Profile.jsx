@@ -10,6 +10,36 @@ import toast from "react-hot-toast";
 
 const libraries = ["places"];
 
+const planConfigs = {
+  gold: {
+    emoji: "👑",
+    label: "Gold Member",
+    bgColor: "bg-amber-500/10",
+    borderColor: "border-amber-500/20",
+    iconBg: "bg-amber-500",
+    shadow: "shadow-amber-500/20",
+    textColor: "text-amber-600 dark:text-amber-500",
+  },
+  silver: {
+    emoji: "⚔️",
+    label: "Silver Member",
+    bgColor: "bg-slate-300/10",
+    borderColor: "border-slate-300/20",
+    iconBg: "bg-slate-400",
+    shadow: "shadow-slate-400/20",
+    textColor: "text-slate-500 dark:text-slate-300",
+  },
+  free: {
+    emoji: "💪",
+    label: "Free Member",
+    bgColor: "bg-indigo-600/10",
+    borderColor: "border-indigo-600/20",
+    iconBg: "bg-indigo-600",
+    shadow: "shadow-indigo-600/20",
+    textColor: "text-indigo-600 dark:text-indigo-400",
+  },
+};
+
 const mapStyles = [
   {
     elementType: "geometry",
@@ -90,20 +120,20 @@ const mapStyles = [
   },
 ];
 
-const ProfileModal = ({ profile, onClose, planConfigs }) => {
+const ProfileModal = ({ profile, onClose }) => {
   if (!profile) return null;
 
-  const currentPlan = profile.plan || "free";
+  const currentPlan = profile.plan || profile.user?.plan || "free";
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div
-        className="relative w-full max-w-lg bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${theme.bgColor.replace("/10", "/20")} to-transparent`}
+          className={`absolute top-0 inset-x-0 h-40 bg-gradient-to-b ${theme.bgColor.replace("/10", "/20")} to-transparent`}
         />
 
         <button
@@ -111,7 +141,7 @@ const ProfileModal = ({ profile, onClose, planConfigs }) => {
           className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
         >
           <svg
-            className="w-5 h-5"
+            className="w-6 h-6"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -125,63 +155,63 @@ const ProfileModal = ({ profile, onClose, planConfigs }) => {
           </svg>
         </button>
 
-        <div className="relative z-10 p-8 flex flex-col items-center">
-          <div className="relative mb-4">
+        <div className="relative z-10 p-10 flex flex-col items-center">
+          <div className="relative mb-6">
             <img
               src={
                 profile.avatar ||
                 `https://ui-avatars.com/api/?name=${profile.username}&background=random`
               }
               alt={profile.username}
-              className={`w-28 h-28 rounded-full border-4 ${theme.borderColor} shadow-xl object-cover bg-slate-800`}
+              className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-slate-800`}
             />
             <div
-              className={`absolute bottom-0 right-0 w-8 h-8 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-sm shadow-lg`}
+              className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
             >
               {theme.emoji}
             </div>
           </div>
 
-          <h2 className="text-2xl font-black text-white uppercase tracking-tighter mb-1">
+          <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
             {profile.username}
           </h2>
           <span
-            className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
           >
             {theme.label}
           </span>
 
           {profile.address && (
-            <div className="flex items-center gap-2 mt-4 text-slate-400 text-xs font-medium">
+            <div className="flex items-center gap-2 mt-5 text-slate-400 text-sm font-medium">
               <span>📍</span> {profile.address}
             </div>
           )}
 
-          <div className="w-full mt-8 space-y-6">
+          <div className="w-full mt-10 space-y-8">
             <div>
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">
                 Identified Games ({profile.games?.length || 0})
               </h3>
-              <div className="flex gap-3 overflow-x-auto pb-2 custom-scrollbar">
+              <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
                 {profile.games?.length > 0 ? (
                   profile.games.map((g, i) => (
-                    <div key={i} className="flex-shrink-0 w-16 group relative">
-                      <div className="aspect-[3/4] rounded-lg overflow-hidden border border-slate-700">
+                    <div key={i} className="flex-shrink-0 w-24 group relative">
+                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-slate-700 shadow-md">
                         <img
                           src={g.coverUrl}
                           alt={g.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform group-hover:scale-110"
                         />
                       </div>
-                      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-lg">
-                        <span className="text-[8px] text-white text-center font-bold px-1">
+                      <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity rounded-xl p-1 pointer-events-none">
+                        <span className="text-[10px] text-white text-center font-bold leading-tight">
                           {g.name}
                         </span>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-600 text-xs italic">
+                  <p className="text-slate-600 text-sm italic w-full text-center py-4">
                     No games public.
                   </p>
                 )}
@@ -189,28 +219,28 @@ const ProfileModal = ({ profile, onClose, planConfigs }) => {
             </div>
 
             <div>
-              <h3 className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">
+              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">
                 Top Agents
               </h3>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-3">
                 {profile.topCharacters?.length > 0 ? (
                   profile.topCharacters.map((c, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-2 bg-slate-800/50 px-2 py-1 rounded-full border border-slate-700"
+                      className="flex items-center gap-3 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700 hover:border-indigo-500/50 transition-colors"
                     >
                       <img
                         src={c.imageUrl}
                         alt={c.name}
-                        className="w-6 h-6 rounded-full object-cover"
+                        className="w-8 h-8 rounded-full object-cover bg-slate-900"
                       />
-                      <span className="text-[10px] font-bold text-slate-300">
+                      <span className="text-xs font-bold text-slate-300">
                         {c.name}
                       </span>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-600 text-xs italic">
+                  <p className="text-slate-600 text-sm italic w-full text-center py-4">
                     No agents deployed.
                   </p>
                 )}
@@ -237,12 +267,6 @@ const Profile = () => {
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
   });
-
-  const plansConfig = {
-    free: { games: 3, savedProfiles: 3 },
-    silver: { games: 5, savedProfiles: 5 },
-    gold: { games: 10, savedProfiles: 10 },
-  };
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -350,38 +374,9 @@ const Profile = () => {
   if (loading) return <Loader />;
 
   const currentPlan = authUser?.plan || "free";
-  const limits = plansConfig[currentPlan];
-
-  const planConfigs = {
-    gold: {
-      emoji: "👑",
-      label: "Gold Member",
-      bgColor: "bg-amber-500/10",
-      borderColor: "border-amber-500/20",
-      iconBg: "bg-amber-500",
-      shadow: "shadow-amber-500/20",
-      textColor: "text-amber-600 dark:text-amber-500",
-    },
-    silver: {
-      emoji: "⚔️",
-      label: "Silver Member",
-      bgColor: "bg-slate-300/10",
-      borderColor: "border-slate-300/20",
-      iconBg: "bg-slate-400",
-      shadow: "shadow-slate-400/20",
-      textColor: "text-slate-500 dark:text-slate-300",
-    },
-    free: {
-      emoji: "💪",
-      label: "Free Member",
-      bgColor: "bg-indigo-600/10",
-      borderColor: "border-indigo-600/20",
-      iconBg: "bg-indigo-600",
-      shadow: "shadow-indigo-600/20",
-      textColor: "text-indigo-600 dark:text-indigo-400",
-    },
-  };
-
+  const limits = planConfigs[currentPlan]
+    ? planConfigs[currentPlan]
+    : planConfigs.free;
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   const hasCoordinates =
@@ -610,6 +605,9 @@ const Profile = () => {
                   {!isLocked && (
                     <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
                       <p className="text-[10px] font-bold text-white text-center">
+                        {item.profile?.username || "Operative"}
+                      </p>
+                      <p className="text-[8px] text-gray-400 text-center uppercase tracking-wider mt-0.5">
                         Click to View
                       </p>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900/90"></div>
@@ -671,7 +669,6 @@ const Profile = () => {
         <ProfileModal
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
-          planConfigs={planConfigs}
         />
       )}
     </div>
