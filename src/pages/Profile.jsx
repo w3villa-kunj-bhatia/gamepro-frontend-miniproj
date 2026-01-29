@@ -12,6 +12,8 @@ const libraries = ["places"];
 
 const planConfigs = {
   gold: {
+    games: 10,
+    savedProfiles: 10,
     emoji: "👑",
     label: "Gold Member",
     bgColor: "bg-amber-500/10",
@@ -22,6 +24,8 @@ const planConfigs = {
     gradient: "from-amber-500/20 to-transparent",
   },
   silver: {
+    games: 5,
+    savedProfiles: 5,
     emoji: "⚔️",
     label: "Silver Member",
     bgColor: "bg-slate-300/10",
@@ -32,6 +36,8 @@ const planConfigs = {
     gradient: "from-slate-400/20 to-transparent",
   },
   free: {
+    games: 3,
+    savedProfiles: 3,
     emoji: "💪",
     label: "Free Member",
     bgColor: "bg-indigo-600/10",
@@ -589,7 +595,8 @@ const Profile = () => {
 
         <div className="md:col-span-1 lg:col-span-1 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col max-h-[320px]">
           <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-6 shrink-0">
-            {profile?.username}'s Network ({savedProfiles.length} / {limits.savedProfiles})
+            {profile?.username}'s Network ({savedProfiles.length} /{" "}
+            {limits.savedProfiles})
           </span>
 
           <div className="grid grid-cols-3 gap-3 overflow-y-auto custom-scrollbar pr-2">
