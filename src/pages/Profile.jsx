@@ -19,6 +19,7 @@ const planConfigs = {
     iconBg: "bg-amber-500",
     shadow: "shadow-amber-500/20",
     textColor: "text-amber-600 dark:text-amber-500",
+    gradient: "from-amber-500/20 to-transparent",
   },
   silver: {
     emoji: "⚔️",
@@ -28,6 +29,7 @@ const planConfigs = {
     iconBg: "bg-slate-400",
     shadow: "shadow-slate-400/20",
     textColor: "text-slate-500 dark:text-slate-300",
+    gradient: "from-slate-400/20 to-transparent",
   },
   free: {
     emoji: "💪",
@@ -37,6 +39,7 @@ const planConfigs = {
     iconBg: "bg-indigo-600",
     shadow: "shadow-indigo-600/20",
     textColor: "text-indigo-600 dark:text-indigo-400",
+    gradient: "from-indigo-600/20 to-transparent",
   },
 };
 
@@ -127,21 +130,17 @@ const ProfileModal = ({ profile, onClose }) => {
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
       <div
-        className="relative w-full max-w-2xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up"
+        className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className={`absolute top-0 inset-x-0 h-40 bg-gradient-to-b ${theme.bgColor.replace("/10", "/20")} to-transparent`}
-        />
-
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-black/20 hover:bg-black/40 text-white rounded-full transition-colors"
+          className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors border border-white/10"
         >
           <svg
-            className="w-6 h-6"
+            className="w-5 h-5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -155,48 +154,60 @@ const ProfileModal = ({ profile, onClose }) => {
           </svg>
         </button>
 
-        <div className="relative z-10 p-10 flex flex-col items-center">
-          <div className="relative mb-6">
-            <img
-              src={
-                profile.avatar ||
-                `https://ui-avatars.com/api/?name=${profile.username}&background=random`
-              }
-              alt={profile.username}
-              className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-slate-800`}
-            />
-            <div
-              className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
+        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700/50 bg-slate-900/50">
+          <div
+            className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
+          />
+
+          <div className="relative z-10 flex flex-col items-center">
+            <div className="relative mb-6">
+              <img
+                src={
+                  profile.avatar ||
+                  `https://ui-avatars.com/api/?name=${profile.username}&background=random`
+                }
+                alt={profile.username}
+                className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-slate-800`}
+              />
+              <div
+                className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
+              >
+                {theme.emoji}
+              </div>
+            </div>
+
+            <h2 className="text-3xl font-black text-white uppercase tracking-tighter text-center">
+              {profile.username}
+            </h2>
+            <span
+              className={`mt-2 px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
             >
-              {theme.emoji}
-            </div>
+              {theme.label}
+            </span>
+
+            {profile.address && (
+              <div className="flex items-center gap-2 mt-6 text-slate-400 text-sm font-medium bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700">
+                <span>📍</span> {profile.address}
+              </div>
+            )}
           </div>
+        </div>
 
-          <h2 className="text-3xl font-black text-white uppercase tracking-tighter mb-2">
-            {profile.username}
-          </h2>
-          <span
-            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${theme.bgColor} ${theme.textColor} border ${theme.borderColor}`}
-          >
-            {theme.label}
-          </span>
-
-          {profile.address && (
-            <div className="flex items-center gap-2 mt-5 text-slate-400 text-sm font-medium">
-              <span>📍</span> {profile.address}
-            </div>
-          )}
-
-          <div className="w-full mt-10 space-y-8">
+        <div className="w-full md:w-2/3 p-8 bg-slate-900 relative overflow-y-auto max-h-[70vh]">
+          <div className="space-y-8">
             <div>
-              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">
-                Identified Games ({profile.games?.length || 0})
-              </h3>
-              <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar">
+              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+                <span className="text-xl">🎮</span>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                  Identified Games ({profile.games?.length || 0})
+                </h3>
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
                 {profile.games?.length > 0 ? (
                   profile.games.map((g, i) => (
-                    <div key={i} className="flex-shrink-0 w-24 group relative">
-                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-slate-700 shadow-md">
+                    <div key={i} className="group relative">
+                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-slate-700 shadow-md transition-all group-hover:border-indigo-500/50">
                         <img
                           src={g.coverUrl}
                           alt={g.name}
@@ -211,7 +222,7 @@ const ProfileModal = ({ profile, onClose }) => {
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-600 text-sm italic w-full text-center py-4">
+                  <p className="col-span-full text-slate-600 text-sm italic py-4">
                     No games public.
                   </p>
                 )}
@@ -219,28 +230,37 @@ const ProfileModal = ({ profile, onClose }) => {
             </div>
 
             <div>
-              <h3 className="text-xs font-black text-slate-500 uppercase tracking-widest mb-4 border-b border-slate-800 pb-2">
-                Top Agents
-              </h3>
+              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+                <span className="text-xl">👥</span>
+                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                  Top Agents
+                </h3>
+              </div>
+
               <div className="flex flex-wrap gap-3">
                 {profile.topCharacters?.length > 0 ? (
                   profile.topCharacters.map((c, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700 hover:border-indigo-500/50 transition-colors"
+                      className="flex items-center gap-3 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700 hover:border-indigo-500/50 transition-colors"
                     >
                       <img
                         src={c.imageUrl}
                         alt={c.name}
-                        className="w-8 h-8 rounded-full object-cover bg-slate-900"
+                        className="w-10 h-10 rounded-lg object-cover bg-slate-900"
                       />
-                      <span className="text-xs font-bold text-slate-300">
-                        {c.name}
-                      </span>
+                      <div className="flex flex-col">
+                        <span className="text-xs font-bold text-slate-300 leading-tight">
+                          {c.name}
+                        </span>
+                        <span className="text-[10px] text-slate-500 uppercase">
+                          Deployed
+                        </span>
+                      </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-600 text-sm italic w-full text-center py-4">
+                  <p className="text-slate-600 text-sm italic py-4">
                     No agents deployed.
                   </p>
                 )}
@@ -260,7 +280,6 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
-
   const [selectedProfile, setSelectedProfile] = useState(null);
 
   const { isLoaded: isMapLoaded } = useLoadScript({
@@ -309,6 +328,7 @@ const Profile = () => {
         (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
       );
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
       setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
     }, 1000);
@@ -374,9 +394,7 @@ const Profile = () => {
   if (loading) return <Loader />;
 
   const currentPlan = authUser?.plan || "free";
-  const limits = planConfigs[currentPlan]
-    ? planConfigs[currentPlan]
-    : planConfigs.free;
+  const limits = planConfigs[currentPlan] || planConfigs.free;
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   const hasCoordinates =
@@ -583,9 +601,9 @@ const Profile = () => {
                 <div
                   key={item._id}
                   onClick={() => !isLocked && setSelectedProfile(item.profile)}
-                  className={`relative group aspect-square rounded-2xl overflow-visible border-2 transition-all shrink-0 ${
+                  className={`relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
                     isLocked
-                      ? "border-red-900/30 overflow-hidden cursor-not-allowed"
+                      ? "border-red-900/30 cursor-not-allowed"
                       : "border-gray-200 dark:border-slate-700 hover:border-indigo-500 cursor-pointer"
                   }`}
                 >
@@ -594,7 +612,7 @@ const Profile = () => {
                       item.profile?.avatar ||
                       `https://ui-avatars.com/api/?name=${item.profile?.username}`
                     }
-                    className={`w-full h-full object-cover rounded-xl transition-transform duration-500 ${
+                    className={`w-full h-full object-cover transition-transform duration-500 ${
                       isLocked
                         ? "grayscale blur-sm opacity-30"
                         : "group-hover:scale-95"
@@ -603,14 +621,13 @@ const Profile = () => {
                   />
 
                   {!isLocked && (
-                    <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-max px-2 py-1 bg-slate-900/90 backdrop-blur-md border border-slate-700 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 pointer-events-none">
-                      <p className="text-[10px] font-bold text-white text-center">
+                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-1 text-center">
+                      <p className="text-[10px] font-bold text-white leading-tight truncate w-full">
                         {item.profile?.username || "Operative"}
                       </p>
-                      <p className="text-[8px] text-gray-400 text-center uppercase tracking-wider mt-0.5">
-                        Click to View
-                      </p>
-                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-slate-900/90"></div>
+                      <span className="text-[8px] text-indigo-400 uppercase tracking-wider mt-0.5">
+                        View
+                      </span>
                     </div>
                   )}
 
