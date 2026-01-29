@@ -1,6 +1,13 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import axios from "../api/axios";
 import api from "../api/axios";
+import toast from "react-hot-toast";
 
 const AuthContext = createContext();
 
@@ -38,8 +45,10 @@ export const AuthProvider = ({ children }) => {
     try {
       await api.post("/auth/logout");
       setUser(null);
+      toast.success("Logged out successfully");
     } catch (err) {
       console.error("Logout failed", err);
+      toast.error("Logout failed");
     }
   };
 
