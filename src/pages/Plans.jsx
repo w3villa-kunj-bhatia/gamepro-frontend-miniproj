@@ -21,7 +21,7 @@ const CheckIcon = ({ className }) => (
 const Plans = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState(null);
 
   const plans = [
     {
@@ -78,11 +78,10 @@ const Plans = () => {
     }
 
     if (planId === "free") return;
-
     if (user.plan === planId) return;
 
     try {
-      setLoading(true);
+      setLoadingPlan(planId);
       const res = await api.post("/payment/create-session", { planId });
 
       if (res.data?.data?.url) {
@@ -96,14 +95,13 @@ const Plans = () => {
         err.response?.data?.message || "Payment initialization failed.";
       alert(msg);
     } finally {
-      setLoading(false);
+      setLoadingPlan(null);
     }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white transition-colors duration-300 py-8 px-4">
       <div className="max-w-7xl mx-auto text-center mb-16">
-
         <h1 className="text-4xl md:text-5xl font-black mb-6">
           Choose Your{" "}
           <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
@@ -114,13 +112,13 @@ const Plans = () => {
           Unlock more slots, exclusive badges, and extended session times.
           Upgrade your arsenal today.
         </p>
-        
       </div>
 
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {plans.map((plan) => {
           const isCurrentPlan = user?.plan === plan.id;
           const isGold = plan.id === "gold";
+          const isThisPlanLoading = loadingPlan === plan.id;
 
           return (
             <div
@@ -170,19 +168,21 @@ const Plans = () => {
 
               <button
                 onClick={() => handleUpgrade(plan.id)}
-                disabled={loading || isCurrentPlan || plan.id === "free"}
+                disabled={
+                  loadingPlan !== null || isCurrentPlan || plan.id === "free"
+                }
                 className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 shadow-lg
                   ${
                     isCurrentPlan
                       ? "bg-gray-100 dark:bg-slate-800 text-gray-400 cursor-default border border-transparent"
                       : isGold
-                      ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/25 active:scale-95"
-                      : "bg-gray-900 dark:bg-white text-white dark:text-slate-900 hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-95"
+                        ? "bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-amber-500/25 active:scale-95"
+                        : "bg-gray-900 dark:bg-white text-white dark:text-slate-900 hover:bg-gray-800 dark:hover:bg-gray-100 active:scale-95"
                   }
-                  ${loading ? "opacity-70 cursor-wait" : ""}
+                  ${isThisPlanLoading ? "opacity-70 cursor-wait" : ""}
                 `}
               >
-                {loading && !isCurrentPlan ? (
+                {isThisPlanLoading ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                       <circle
@@ -215,7 +215,7 @@ const Plans = () => {
             </div>
           );
         })}
-      </div>      
+      </div>
     </div>
   );
 };
