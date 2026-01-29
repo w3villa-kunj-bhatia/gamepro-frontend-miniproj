@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
-import toast from "react-hot-toast";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import toast from "react-hot-toast";
 
 const libraries = ["places"];
 
@@ -96,6 +96,7 @@ const Profile = () => {
   const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
 
   const { isLoaded: isMapLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -126,6 +127,35 @@ const Profile = () => {
     };
     fetchProfileData();
   }, []);
+
+  useEffect(() => {
+    if (!authUser?.planExpiresAt || authUser.plan === "free") {
+      setTimeLeft("");
+      return;
+    }
+
+    const interval = setInterval(() => {
+      const now = new Date();
+      const expirationDate = new Date(authUser.planExpiresAt);
+      const distance = expirationDate - now;
+
+      if (distance < 0) {
+        setTimeLeft("Plan Expired");
+        clearInterval(interval);
+        return;
+      }
+
+      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+      const hours = Math.floor(
+        (distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+      );
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+
+      setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [authUser]);
 
   const downloadProfilePDF = async () => {
     if (!profile) return;
@@ -259,11 +289,18 @@ const Profile = () => {
             <h2 className="text-2xl font-black uppercase tracking-tighter truncate w-full text-gray-900 dark:text-white">
               {profile?.username || "Operative"}
             </h2>
-            <p className="text-indigo-600 dark:text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em] mt-2 mb-12">
-              System Level: {currentPlan}
-            </p>
+            <div className="flex flex-col items-center mt-2 mb-12">
+              <p className="text-indigo-600 dark:text-indigo-400 text-[12px] font-bold uppercase tracking-[0.2em]">
+                System Level: {currentPlan}
+              </p>
+              {timeLeft && (
+                <span className="mt-1 text-[10px] font-mono text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-900/30 px-2 py-0.5 rounded border border-amber-200 dark:border-amber-800/50">
+                  ⏳ Expires: {timeLeft}
+                </span>
+              )}
+            </div>
 
-            <div className="mt-12 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-12">
+            <div className="mt-2 w-full bg-gray-50 dark:bg-slate-950/50 border border-gray-200 dark:border-slate-800 rounded-2xl p-4 mb-12">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xl">📍</span>
                 <p className="text-gray-600 dark:text-slate-300 text-md font-medium truncate">
@@ -415,10 +452,10 @@ const Profile = () => {
               return (
                 <div
                   key={item._id}
-                  className={`relative group aspect-square rounded-2xl overflow-hidden border-2 transition-all shrink-0 ${
+                  className={`relative group aspect-square rounded-2xl overflow-visible border-2 transition-all shrink-0 ${
                     isLocked
-                      ? "border-red-900/30"
-                      : "border-gray-200 dark:border-slate-700 hover:border-indigo-500"
+                      ? "border-red-900/30 overflow-hidden"
+                      : "border-gray-200 dark:border-slate-700 hover:border-indigo-500 cursor-pointer"
                   }`}
                 >
                   <img
@@ -426,19 +463,35 @@ const Profile = () => {
                       item.profile?.avatar ||
                       `https://ui-avatars.com/api/?name=${item.profile?.username}`
                     }
-                    className={`w-full h-full object-cover transition-transform duration-500 ${
+                    className={`w-full h-full object-cover rounded-xl transition-transform duration-500 ${
                       isLocked
                         ? "grayscale blur-sm opacity-30"
-                        : "group-hover:scale-110"
+                        : "group-hover:scale-95"
                     }`}
                     alt={item.profile?.username}
                   />
 
                   {!isLocked && (
-                    <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center p-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-center">
-                      <span className="text-[10px] font-bold uppercase tracking-tighter truncate w-full text-white">
+                    <div className="absolute bottom-[110%] left-1/2 -translate-x-1/2 w-32 bg-slate-900/90 backdrop-blur-md border border-slate-700 p-3 rounded-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50 shadow-2xl flex flex-col items-center">
+                      <div className="w-8 h-8 rounded-full overflow-hidden border border-slate-500 mb-2">
+                        <img
+                          src={
+                            item.profile?.avatar ||
+                            `https://ui-avatars.com/api/?name=${item.profile?.username}`
+                          }
+                          className="w-full h-full object-cover"
+                          alt="Mini Avatar"
+                        />
+                      </div>
+                      <p className="text-[10px] font-bold text-white text-center truncate w-full">
                         {item.profile?.username}
+                      </p>
+                      <div className="w-full h-px bg-slate-700/50 my-1"></div>
+                      <span className="text-[8px] text-indigo-400 font-bold uppercase tracking-wider">
+                        Operative
                       </span>
+
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-slate-900/90"></div>
                     </div>
                   )}
 
