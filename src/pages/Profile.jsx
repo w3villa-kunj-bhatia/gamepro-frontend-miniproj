@@ -310,7 +310,7 @@ const Profile = () => {
       );
       const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
 
-      setTimeLeft(`${days}d ${hours}h ${minutes}m`);
+      setTimeLeft(`${days}d ${hours}h ${minutes}m ${seconds}s`);
     }, 1000);
 
     return () => clearInterval(interval);
