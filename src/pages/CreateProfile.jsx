@@ -1,16 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  useLoadScript,
-  GoogleMap,
-  Marker,
-  Autocomplete,
-} from "@react-google-maps/api";
+import { useLoadScript, GoogleMap, Autocomplete } from "@react-google-maps/api";
 import api from "../api/axios";
 import Loader from "../components/Loader";
 import { useAuth } from "../auth/AuthContext";
 
-const libraries = ["places"];
+const libraries = ["places", "marker"];
 
 const SearchIcon = () => (
   <svg
@@ -27,6 +22,37 @@ const SearchIcon = () => (
     />
   </svg>
 );
+
+const CustomMarker = ({ position, map }) => {
+  useEffect(() => {
+    if (!map || !position) return;
+
+    let marker;
+
+    const initMarker = async () => {
+      try {
+        const { AdvancedMarkerElement } =
+          await google.maps.importLibrary("marker");
+
+        marker = new AdvancedMarkerElement({
+          map,
+          position,
+          title: "Operative Location",
+        });
+      } catch (error) {
+        console.error("Error loading AdvancedMarkerElement:", error);
+      }
+    };
+
+    initMarker();
+
+    return () => {
+      if (marker) marker.map = null;
+    };
+  }, [map, position]);
+
+  return null;
+};
 
 const CreateProfile = () => {
   const { isLoaded } = useLoadScript({
@@ -50,9 +76,9 @@ const CreateProfile = () => {
   const [charResults, setCharResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [mapInstance, setMapInstance] = useState(null);
 
   const autocompleteRef = useRef(null);
-
   const navigate = useNavigate();
   const { checkUser } = useAuth();
 
@@ -76,7 +102,7 @@ const CreateProfile = () => {
     const timer = setTimeout(async () => {
       if (gameSearch.length > 2) {
         const res = await api.get(
-          `/igdb/search?q=${encodeURIComponent(gameSearch)}`
+          `/igdb/search?q=${encodeURIComponent(gameSearch)}`,
         );
         setGameResults(res.data.data || []);
       } else {
@@ -90,7 +116,7 @@ const CreateProfile = () => {
     const timer = setTimeout(async () => {
       if (charSearch.length > 2) {
         const res = await api.get(
-          `/igdb/characters?q=${encodeURIComponent(charSearch)}`
+          `/igdb/characters?q=${encodeURIComponent(charSearch)}`,
         );
         setCharResults(res.data.data || []);
       } else {
@@ -103,7 +129,6 @@ const CreateProfile = () => {
   const onPlaceChanged = () => {
     if (autocompleteRef.current) {
       const place = autocompleteRef.current.getPlace();
-
       const address = place.formatted_address || "";
       let lat = 0;
       let lng = 0;
@@ -173,7 +198,7 @@ const CreateProfile = () => {
       dataToSend.append("games", JSON.stringify(formData.games));
       dataToSend.append(
         "topCharacters",
-        JSON.stringify(formData.topCharacters)
+        JSON.stringify(formData.topCharacters),
       );
 
       const res = await api.post("/profile", dataToSend);
@@ -183,7 +208,7 @@ const CreateProfile = () => {
       }
     } catch (err) {
       alert(
-        `Error: ${err.response?.data?.message || "Failed to save profile."}`
+        `Error: ${err.response?.data?.message || "Failed to save profile."}`,
       );
     } finally {
       setSaving(false);
@@ -256,12 +281,17 @@ const CreateProfile = () => {
                     mapContainerStyle={{ width: "100%", height: "100%" }}
                     center={formData.coordinates}
                     zoom={13}
+                    onLoad={(map) => setMapInstance(map)}
                     options={{
                       disableDefaultUI: true,
                       zoomControl: true,
+                      mapId: "DEMO_MAP_ID",
                     }}
                   >
-                    <Marker position={formData.coordinates} />
+                    <CustomMarker
+                      position={formData.coordinates}
+                      map={mapInstance}
+                    />
                   </GoogleMap>
                 </div>
               )}
@@ -437,7 +467,7 @@ const CreateProfile = () => {
                       setFormData({
                         ...formData,
                         topCharacters: formData.topCharacters.filter(
-                          (_, idx) => idx !== i
+                          (_, idx) => idx !== i,
                         ),
                       })
                     }
