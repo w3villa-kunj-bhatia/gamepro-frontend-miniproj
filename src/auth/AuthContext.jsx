@@ -5,7 +5,6 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import axios from "../api/axios";
 import api from "../api/axios";
 import toast from "react-hot-toast";
 
@@ -16,10 +15,20 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const checkUser = useCallback(async () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
-      const res = await axios.get("/auth/me");
+      const res = await api.get("/auth/me");
       setUser(res.data.data.user);
     } catch (err) {
+      console.error("Session check failed:", err);
+      localStorage.removeItem("token");
       setUser(null);
     } finally {
       setLoading(false);
@@ -32,6 +41,7 @@ export const AuthProvider = ({ children }) => {
 
     if (urlToken) {
       localStorage.setItem("token", urlToken);
+
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
@@ -40,7 +50,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("/auth/login", { email, password });
+      const res = await api.post("/auth/login", { email, password });
       const userData = res.data.data.user;
       const token = res.data.data.token;
 
@@ -58,12 +68,12 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout backend call failed", err);
+    } finally {
       localStorage.removeItem("token");
       setUser(null);
       toast.success("Logged out successfully");
-    } catch (err) {
-      console.error("Logout failed", err);
-      toast.error("Logout failed");
     }
   };
 
