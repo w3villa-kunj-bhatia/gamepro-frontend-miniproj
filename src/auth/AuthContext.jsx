@@ -27,6 +27,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get("token");
+
+    if (urlToken) {
+      localStorage.setItem("token", urlToken);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     checkUser();
   }, [checkUser]);
 
@@ -34,6 +42,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const res = await axios.post("/auth/login", { email, password });
       const userData = res.data.data.user;
+      const token = res.data.data.token;
+
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
       setUser(userData);
       return userData;
     } catch (err) {
@@ -44,6 +58,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post("/auth/logout");
+      localStorage.removeItem("token");
       setUser(null);
       toast.success("Logged out successfully");
     } catch (err) {
