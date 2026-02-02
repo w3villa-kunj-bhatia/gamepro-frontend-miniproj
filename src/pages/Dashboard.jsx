@@ -181,7 +181,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
                   Top Agents
                 </h3>
               </div>
-              
+
               <div className="flex flex-wrap gap-3">
                 {profile.topCharacters?.length > 0 ? (
                   profile.topCharacters.map((c, i) => (
@@ -331,8 +331,8 @@ const Dashboard = () => {
   }, [searchInput]);
 
   const handleLogout = async () => {
-    await logout();
     navigate("/");
+    await logout();
   };
 
   const handleReaction = async (profileId, type) => {

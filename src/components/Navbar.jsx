@@ -128,8 +128,8 @@ const Navbar = () => {
   }
 
   const handleLogout = async () => {
-    await logout();
     navigate("/");
+    await logout();
   };
 
   const DockItem = ({ to, onClick, icon, label, isActive, colorClass }) => {

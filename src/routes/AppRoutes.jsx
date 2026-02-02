@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "../auth/ProtectedRoute";
 
 import Login from "../pages/Login";
@@ -12,6 +12,7 @@ import PaymentSuccess from "../pages/PaymentSuccess";
 import PaymentCancel from "../pages/PaymentCancel";
 import LandingPage from "../pages/LandingPage";
 import CreateProfile from "../pages/CreateProfile";
+import NotFound from "../pages/NotFound";
 
 const AppRoutes = () => {
   return (
@@ -89,7 +90,7 @@ const AppRoutes = () => {
         }
       />
 
-      <Route path="*" element={<Navigate to="/login" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 };
