@@ -592,7 +592,7 @@ const Profile = () => {
                 disabled={isDownloading}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
               >
-                {isDownloading ? "Generating..." : "Capture Dashboard (PDF)"}
+                {isDownloading ? "Generating..." : "Download Identity (PDF)"}
               </button>
             </div>
           </div>
