@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 import api from "../api/axios";
 import Loader from "../components/Loader";
@@ -138,7 +138,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
       <div
-        className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
+        className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl shadow-2xl animate-slide-up flex flex-col md:flex-row max-h-[90vh] overflow-y-auto md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -160,7 +160,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </svg>
         </button>
 
-        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50">
+        <div className="w-full md:w-1/3 relative p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50 shrink-0">
           <div
             className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
           />
@@ -218,7 +218,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-8 bg-white dark:bg-slate-900 relative overflow-y-auto max-h-[70vh]">
+        <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[70vh]">
           <div className="space-y-8">
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
@@ -299,7 +299,8 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
 };
 
 const Profile = () => {
-  const { user: authUser } = useAuth();
+  const { user: authUser, logout } = useAuth(); // Added logout here
+  const navigate = useNavigate(); // Added navigate
   const [profile, setProfile] = useState(null);
   const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -361,6 +362,11 @@ const Profile = () => {
     return () => clearInterval(interval);
   }, [authUser]);
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   const downloadProfilePDF = async () => {
     if (!profile) return;
     const element = document.getElementById("profile-identity");
@@ -368,7 +374,6 @@ const Profile = () => {
 
     try {
       setIsDownloading(true);
-
       await new Promise((resolve) => setTimeout(resolve, 800));
 
       const canvas = await html2canvas(element, {
@@ -391,28 +396,22 @@ const Profile = () => {
             clonedContainer.style.gap = "1rem";
 
             const children = Array.from(clonedContainer.children);
-
             if (children[0]) {
               children[0].style.gridColumn = "span 1";
               children[0].style.gridRow = "span 3";
             }
-
             if (children[1]) {
               children[1].style.gridColumn = "span 1";
             }
-
             if (children[2]) {
               children[2].style.gridColumn = "span 2";
             }
-
             if (children[3]) {
               children[3].style.gridColumn = "span 3";
             }
-
             if (children[4]) {
               children[4].style.gridColumn = "span 1";
             }
-
             if (children[5]) {
               children[5].style.gridColumn = "span 2";
             }
@@ -501,6 +500,23 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-white p-4 md:p-8 pt-24 pb-36 transition-colors duration-500">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+            User Profile
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+            Identity & Archives
+          </p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="hidden md:block bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 transition-all active:scale-95"
+        >
+          Logout
+        </button>
+      </div>
+
       <div
         id="profile-identity"
         className="max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-min"
@@ -592,7 +608,7 @@ const Profile = () => {
                 disabled={isDownloading}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
               >
-                {isDownloading ? "Generating..." : "Download Identity (PDF)"}
+                {isDownloading ? "Generating..." : "Capture Dashboard (PDF)"}
               </button>
             </div>
           </div>
