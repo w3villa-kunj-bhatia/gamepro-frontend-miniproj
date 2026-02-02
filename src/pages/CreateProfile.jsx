@@ -8,6 +8,9 @@ import { useAuth } from "../auth/AuthContext";
 
 const libraries = ["places", "marker"];
 
+const scrollbarStyles =
+  "overflow-y-auto [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-indigo-500 transition-colors pr-2";
+
 const SearchIcon = () => (
   <svg
     className="w-4 h-4 text-slate-400"
@@ -27,14 +30,11 @@ const SearchIcon = () => (
 const CustomMarker = ({ position, map }) => {
   useEffect(() => {
     if (!map || !position) return;
-
     let marker;
-
     const initMarker = async () => {
       try {
         const { AdvancedMarkerElement } =
           await google.maps.importLibrary("marker");
-
         marker = new AdvancedMarkerElement({
           map,
           position,
@@ -44,14 +44,11 @@ const CustomMarker = ({ position, map }) => {
         console.error("Error loading AdvancedMarkerElement:", error);
       }
     };
-
     initMarker();
-
     return () => {
       if (marker) marker.map = null;
     };
   }, [map, position]);
-
   return null;
 };
 
@@ -82,9 +79,6 @@ const CreateProfile = () => {
   const autocompleteRef = useRef(null);
   const navigate = useNavigate();
   const { checkUser } = useAuth();
-
-  const scrollbarStyles =
-    "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-800/50 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-indigo-500 transition-colors";
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -221,48 +215,72 @@ const CreateProfile = () => {
   if (loading || !isLoaded) return <Loader />;
 
   return (
-    <div
-      className={`min-h-screen bg-slate-950 text-slate-100 p-6 pt-12 pb-12 overflow-y-auto ${scrollbarStyles}`}
-    >
+    <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-20 transition-colors duration-300">
       <form
         onSubmit={handleSubmit}
-        className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-800 shadow-2xl"
+        className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden"
       >
-        <div className="col-span-full border-b border-slate-800 pb-6 mb-2">
-          <h2 className="text-3xl font-black uppercase tracking-tighter text-white">
-            Operative Profile
-          </h2>
-          <p className="text-slate-500 text-sm mt-1">
-            Configure your identity and arsenal settings.
-          </p>
-        </div>
+        <div
+          className={`lg:col-span-5 flex flex-col gap-6 h-full ${scrollbarStyles} pb-20`}
+        >
+          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
+            <h2 className="text-2xl font-black uppercase tracking-tighter mb-1 text-indigo-600 dark:text-white">
+              Operative Profile
+            </h2>
+            <p className="text-slate-500 text-sm mb-6">
+              Configure your identity and location.
+            </p>
 
-        <div className="space-y-6">
-          <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-2">
-            Identity & Location
-          </h3>
+            <div className="mb-6 p-4 bg-slate-100 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700/50">
+              <label className="text-xs font-bold block mb-3 uppercase text-slate-500 dark:text-slate-400">
+                Profile Avatar
+              </label>
+              <div className="flex items-center gap-4">
+                <div className="relative w-20 h-20 shrink-0">
+                  <img
+                    src={
+                      avatarFile
+                        ? URL.createObjectURL(avatarFile)
+                        : formData.avatar ||
+                          "https://via.placeholder.com/200x200"
+                    }
+                    alt="Avatar"
+                    className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-700 shadow-md bg-slate-200 dark:bg-slate-800"
+                  />
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
+                    onChange={(e) => setAvatarFile(e.target.files[0])}
+                  />
+                  <p className="text-[10px] text-slate-400 mt-2">
+                    Max size 2MB. Supports PNG, JPG.
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs text-slate-400 font-semibold ml-1 mb-1 block">
+            <div className="mb-4">
+              <label className="text-xs font-semibold ml-1 mb-1 block text-slate-500 dark:text-slate-400">
                 Codename / Username
               </label>
               <input
                 required
                 value={formData.username}
                 placeholder="e.g. ShadowHunter"
-                className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
                 onChange={(e) =>
                   setFormData({ ...formData, username: e.target.value })
                 }
               />
             </div>
 
-            <div>
-              <label className="text-xs text-slate-400 font-semibold ml-1 mb-1 block">
+            <div className="mb-2">
+              <label className="text-xs font-semibold ml-1 mb-1 block text-slate-500 dark:text-slate-400">
                 Base Location
               </label>
-
               <Autocomplete
                 onLoad={(autocomplete) =>
                   (autocompleteRef.current = autocomplete)
@@ -273,7 +291,7 @@ const CreateProfile = () => {
                   required
                   value={formData.address}
                   placeholder="Start typing your city..."
-                  className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600 mb-3"
+                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 mb-3 text-slate-900 dark:text-slate-100"
                   onChange={(e) =>
                     setFormData({ ...formData, address: e.target.value })
                   }
@@ -281,7 +299,7 @@ const CreateProfile = () => {
               </Autocomplete>
 
               {formData.coordinates.lat !== 0 && (
-                <div className="w-full h-48 rounded-xl overflow-hidden border border-slate-700 shadow-inner">
+                <div className="w-full h-40 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner">
                   <GoogleMap
                     mapContainerStyle={{ width: "100%", height: "100%" }}
                     center={formData.coordinates}
@@ -301,42 +319,18 @@ const CreateProfile = () => {
                 </div>
               )}
             </div>
-
-            <div className="p-4 bg-slate-800/30 rounded-xl border border-slate-800/50">
-              <label className="text-xs text-slate-400 font-bold block mb-3 uppercase">
-                Profile Picture
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="relative w-16 h-16 shrink-0">
-                  <img
-                    src={
-                      avatarFile
-                        ? URL.createObjectURL(avatarFile)
-                        : formData.avatar ||
-                          "https://via.placeholder.com/200x200"
-                    }
-                    alt="Avatar"
-                    className="w-full h-full rounded-full object-cover border-2 border-slate-700 bg-slate-800"
-                  />
-                </div>
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="w-full text-xs text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
-                  onChange={(e) => setAvatarFile(e.target.files[0])}
-                />
-              </div>
-            </div>
           </div>
         </div>
 
-        <div className="space-y-8 relative">
-          <div className="space-y-4">
-            <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest">
+        <div
+          className={`lg:col-span-7 flex flex-col h-full gap-6 ${scrollbarStyles} pb-24`}
+        >
+          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
+            <h3 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-4">
               Deployed Arsenal (Games)
             </h3>
 
-            <div className="relative group">
+            <div className="relative group mb-4">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <SearchIcon />
               </div>
@@ -344,23 +338,23 @@ const CreateProfile = () => {
                 value={gameSearch}
                 onChange={(e) => setGameSearch(e.target.value)}
                 placeholder="Search game database..."
-                className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
               />
 
               {gameResults.length > 0 && (
                 <div
-                  className={`absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                  className={`absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
                 >
                   {gameResults.map((g) => (
                     <div
                       key={g.id}
                       onClick={() => addGame(g)}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-600 hover:text-white cursor-pointer text-sm border-b border-slate-700/50 last:border-0 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 hover:text-indigo-700 dark:hover:text-white cursor-pointer text-sm border-b border-slate-100 dark:border-slate-700/50 last:border-0 transition-colors"
                     >
                       <img
                         src={g.cover?.url || "https://via.placeholder.com/40"}
                         alt={g.name}
-                        className="w-8 h-10 object-cover rounded bg-slate-700"
+                        className="w-8 h-10 object-cover rounded bg-slate-200 dark:bg-slate-700"
                       />
                       <span>{g.name}</span>
                     </div>
@@ -369,13 +363,11 @@ const CreateProfile = () => {
               )}
             </div>
 
-            <div
-              className={`grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-1 ${scrollbarStyles}`}
-            >
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
               {formData.games.map((g, i) => (
                 <div
                   key={i}
-                  className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-700 shadow-lg"
+                  className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-xl transition-all"
                 >
                   <img
                     src={g.coverUrl}
@@ -417,19 +409,19 @@ const CreateProfile = () => {
                 </div>
               ))}
               {formData.games.length === 0 && (
-                <div className="col-span-full border-2 border-dashed border-slate-800 rounded-xl p-8 flex items-center justify-center text-slate-600 text-xs">
+                <div className="col-span-full border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 flex items-center justify-center text-slate-400 text-xs">
                   No games selected
                 </div>
               )}
             </div>
           </div>
 
-          <div className="space-y-4 border-t border-slate-800/50 pt-6">
-            <h3 className="text-xs font-bold text-indigo-400 uppercase tracking-widest">
+          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
+            <h3 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-4">
               Top Agents (Characters)
             </h3>
 
-            <div className="relative">
+            <div className="relative mb-4">
               <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <SearchIcon />
               </div>
@@ -437,24 +429,25 @@ const CreateProfile = () => {
                 value={charSearch}
                 onChange={(e) => setCharSearch(e.target.value)}
                 placeholder="Search character database..."
-                className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600"
+                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
               />
+
               {charResults.length > 0 && (
                 <div
-                  className={`absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                  className={`absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
                 >
                   {charResults.map((char) => (
                     <div
                       key={char.id}
                       onClick={() => addCharacter(char)}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-600 hover:text-white cursor-pointer text-sm border-b border-slate-700/50 last:border-0 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 hover:text-indigo-700 dark:hover:text-white cursor-pointer text-sm border-b border-slate-100 dark:border-slate-700/50 last:border-0 transition-colors"
                     >
                       <img
                         src={
                           char.mug_shot?.url || "https://via.placeholder.com/40"
                         }
                         alt={char.name}
-                        className="w-8 h-8 rounded-full object-cover bg-slate-700"
+                        className="w-8 h-8 rounded-full object-cover bg-slate-200 dark:bg-slate-700"
                       />
                       <span>{char.name}</span>
                     </div>
@@ -467,14 +460,14 @@ const CreateProfile = () => {
               {formData.topCharacters.map((c, i) => (
                 <div
                   key={i}
-                  className="group relative flex items-center gap-2 bg-slate-800/80 pl-1 pr-3 py-1 rounded-full border border-slate-700 hover:border-indigo-500/50 transition-colors"
+                  className="group relative flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 pl-1 pr-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition-colors"
                 >
                   <img
                     src={c.imageUrl}
                     alt={c.name}
-                    className="w-8 h-8 rounded-full object-cover border border-slate-600 group-hover:border-indigo-400"
+                    className="w-8 h-8 rounded-full object-cover border border-slate-300 dark:border-slate-600 group-hover:border-indigo-400"
                   />
-                  <span className="text-[11px] font-bold text-slate-200">
+                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
                     {c.name}
                   </span>
                   <button
@@ -487,7 +480,7 @@ const CreateProfile = () => {
                         ),
                       })
                     }
-                    className="ml-1 text-slate-500 hover:text-red-400 transition-colors"
+                    className="ml-1 text-slate-400 hover:text-red-500 transition-colors"
                   >
                     <svg
                       className="w-3 h-3"
@@ -506,22 +499,22 @@ const CreateProfile = () => {
                 </div>
               ))}
               {formData.topCharacters.length === 0 && (
-                <div className="text-slate-600 text-xs italic py-2">
+                <div className="text-slate-400 text-xs italic py-2">
                   No agents selected.
                 </div>
               )}
             </div>
           </div>
-        </div>
 
-        <div className="col-span-full pt-6 border-t border-slate-800 flex justify-center">
-          <button
-            type="submit"
-            disabled={saving}
-            className="w-full md:w-auto md:px-12 bg-indigo-600 py-4 rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-500 transition-all disabled:bg-slate-800 disabled:text-slate-500 disabled:cursor-not-allowed shadow-lg shadow-indigo-600/20"
-          >
-            {saving ? "Synchronizing Data..." : "Finalize Profile"}
-          </button>
+          <div className="mt-auto pt-6 flex justify-end">
+            <button
+              type="submit"
+              disabled={saving}
+              className="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-600/30 transition-all disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed"
+            >
+              {saving ? "Synchronizing Data..." : "Finalize Profile"}
+            </button>
+          </div>
         </div>
       </form>
     </div>
