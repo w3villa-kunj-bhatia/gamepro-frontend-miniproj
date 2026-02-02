@@ -6,7 +6,7 @@ import api from "../api/axios";
 
 const HomeIcon = () => (
   <svg
-    className="w-6 h-6"
+    className="w-5 h-5 md:w-6 md:h-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -22,7 +22,7 @@ const HomeIcon = () => (
 
 const DashboardIcon = () => (
   <svg
-    className="w-6 h-6"
+    className="w-5 h-5 md:w-6 md:h-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -38,7 +38,7 @@ const DashboardIcon = () => (
 
 const CrownIcon = () => (
   <svg
-    className="w-6 h-6"
+    className="w-5 h-5 md:w-6 md:h-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -54,7 +54,7 @@ const CrownIcon = () => (
 
 const LogoutIcon = () => (
   <svg
-    className="w-6 h-6"
+    className="w-5 h-5 md:w-6 md:h-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -70,7 +70,7 @@ const LogoutIcon = () => (
 
 const AdminIcon = () => (
   <svg
-    className="w-6 h-6"
+    className="w-5 h-5 md:w-6 md:h-6"
     fill="none"
     viewBox="0 0 24 24"
     stroke="currentColor"
@@ -128,7 +128,7 @@ const Navbar = () => {
 
   const DockItem = ({ to, onClick, icon, label, isActive, colorClass }) => {
     const baseClass =
-      "group relative flex flex-col items-center justify-center p-3 rounded-2xl transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-110";
+      "group relative flex-shrink-0 flex flex-col items-center justify-center p-2 md:p-3 rounded-2xl transition-all duration-300 ease-out hover:-translate-y-2 hover:scale-110";
     const activeClass = isActive
       ? "bg-white/20 dark:bg-white/10 shadow-inner"
       : "hover:bg-white/10 dark:hover:bg-white/5";
@@ -143,14 +143,14 @@ const Navbar = () => {
         >
           {icon}
         </div>
-        <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none whitespace-nowrap">
+        <span className="hidden md:block absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none whitespace-nowrap z-50">
           {label}
         </span>
         {isActive && (
           <div
             className={`absolute -bottom-1 w-1 h-1 rounded-full ${colorClass.replace(
               "text-",
-              "bg-"
+              "bg-",
             )}`}
           ></div>
         )}
@@ -172,13 +172,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[95vw]">
+    <nav className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-[calc(100%-1rem)] md:w-auto md:max-w-fit">
       <div
-        className="flex items-center gap-2 px-3 py-3 md:px-4 md:py-3
-                      bg-white/70 dark:bg-slate-900/80 backdrop-blur-2xl
+        className="flex items-center justify-between md:justify-center gap-1 md:gap-2 px-2 py-2 md:px-4 md:py-3
+                      bg-white/80 dark:bg-slate-900/90 backdrop-blur-2xl
                       border border-white/20 dark:border-slate-700/50 
-                      rounded-3xl shadow-[0_20px_40px_-10px_rgba(0,0,0,0.3)]
-                      ring-1 ring-black/5 dark:ring-white/10"
+                      rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]
+                      ring-1 ring-black/5 dark:ring-white/10
+                      overflow-x-auto [&::-webkit-scrollbar]:hidden"
       >
         <DockItem
           to="/"
@@ -188,7 +189,7 @@ const Navbar = () => {
           colorClass="text-blue-600 dark:text-blue-400"
         />
 
-        <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
+        <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
         {user ? (
           <>
@@ -218,11 +219,11 @@ const Navbar = () => {
               colorClass="text-amber-500"
             />
 
-            <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
+            <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
             <Link
               to="/profile"
-              className="group relative mx-1 transition-all duration-300 hover:-translate-y-2 hover:scale-110"
+              className="group relative mx-0.5 md:mx-1 transition-all duration-300 hover:-translate-y-2 hover:scale-110 flex-shrink-0"
             >
               <img
                 src={
@@ -232,9 +233,9 @@ const Navbar = () => {
                   }&background=random`
                 }
                 alt="Profile"
-                className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover group-hover:border-blue-500"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover group-hover:border-blue-500"
               />
-              <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none">
+              <span className="hidden md:block absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none">
                 Profile
               </span>
             </Link>
@@ -251,24 +252,24 @@ const Navbar = () => {
           <>
             <Link
               to="/login"
-              className="px-5 py-2.5 text-sm font-bold text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-2xl transition-all"
+              className="flex-shrink-0 px-3 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-bold text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10 rounded-2xl transition-all whitespace-nowrap"
             >
               Log In
             </Link>
             <Link
               to="/signup"
-              className="px-5 py-2.5 text-sm font-bold bg-blue-600 text-white rounded-2xl hover:bg-blue-700 hover:-translate-y-1 transition-all shadow-lg shadow-blue-600/30"
+              className="flex-shrink-0 px-3 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-bold bg-blue-600 text-white rounded-2xl hover:bg-blue-700 hover:-translate-y-1 transition-all shadow-lg shadow-blue-600/30 whitespace-nowrap"
             >
               Get Started
             </Link>
           </>
         )}
 
-        <div className="w-px h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-1"></div>
+        <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
         <button
           onClick={toggleTheme}
-          className="p-3 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-yellow-400 transition-all hover:-translate-y-1 hover:scale-110"
+          className="flex-shrink-0 p-2 md:p-3 rounded-full hover:bg-gray-100 dark:hover:bg-slate-800 text-gray-500 dark:text-yellow-400 transition-all hover:-translate-y-1 hover:scale-110"
           title="Toggle Theme"
         >
           {isDarkMode ? "☀️" : "🌙"}
