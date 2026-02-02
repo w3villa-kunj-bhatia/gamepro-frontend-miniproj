@@ -58,7 +58,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
       <div
-        className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
+        className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl shadow-2xl animate-slide-up flex flex-col md:flex-row max-h-[90vh] overflow-y-auto md:overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         <button
@@ -80,7 +80,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </svg>
         </button>
 
-        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50">
+        <div className="w-full md:w-1/3 relative p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50 shrink-0">
           <div
             className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
           />
@@ -138,7 +138,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-8 bg-white dark:bg-slate-900 relative overflow-y-auto max-h-[70vh]">
+        <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[70vh]">
           <div className="space-y-8">
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
