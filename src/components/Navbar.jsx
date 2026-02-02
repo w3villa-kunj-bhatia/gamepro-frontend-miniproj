@@ -143,7 +143,7 @@ const Navbar = () => {
         >
           {icon}
         </div>
-        <span className="hidden md:block absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none whitespace-nowrap z-50">
+        <span className="absolute -top-10 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none whitespace-nowrap z-50">
           {label}
         </span>
         {isActive && (
@@ -172,14 +172,14 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 w-full max-w-[calc(100%-1rem)] md:w-auto md:max-w-fit">
+    <nav className="fixed bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-50 w-auto max-w-[98vw] md:max-w-fit">
       <div
-        className="flex items-center justify-between md:justify-center gap-1 md:gap-2 px-2 py-2 md:px-4 md:py-3
+        className="flex items-center justify-between md:justify-center gap-1 md:gap-2 px-1.5 py-2 md:px-4 md:py-3
                       bg-white/80 dark:bg-slate-900/90 backdrop-blur-2xl
                       border border-white/20 dark:border-slate-700/50 
                       rounded-3xl shadow-[0_10px_30px_-10px_rgba(0,0,0,0.3)]
                       ring-1 ring-black/5 dark:ring-white/10
-                      overflow-x-auto [&::-webkit-scrollbar]:hidden"
+                      overflow-visible"
       >
         <DockItem
           to="/"
@@ -223,7 +223,7 @@ const Navbar = () => {
 
             <Link
               to="/profile"
-              className="group relative mx-0.5 md:mx-1 transition-all duration-300 hover:-translate-y-2 hover:scale-110 flex-shrink-0"
+              className="group relative flex-shrink-0 mx-0.5 md:mx-1 transition-all duration-300 hover:-translate-y-2 hover:scale-110"
             >
               <img
                 src={
@@ -235,7 +235,7 @@ const Navbar = () => {
                 alt="Profile"
                 className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-white dark:border-slate-700 shadow-sm object-cover group-hover:border-blue-500"
               />
-              <span className="hidden md:block absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none">
+              <span className="absolute -top-10 left-1/2 -translate-x-1/2 scale-0 group-hover:scale-100 transition-transform bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xs font-bold px-2 py-1 rounded-md shadow-lg pointer-events-none z-50">
                 Profile
               </span>
             </Link>
