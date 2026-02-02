@@ -31,7 +31,7 @@ const DashboardIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+      d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
     />
   </svg>
 );
@@ -241,7 +241,7 @@ const Navbar = () => {
             colorClass="text-blue-600 dark:text-blue-400"
           />
 
-          <div className="hidden md:block w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
+          <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
           {user ? (
             <>
@@ -271,7 +271,7 @@ const Navbar = () => {
                 colorClass="text-amber-500"
               />
 
-              <div className="hidden md:block w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
+              <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
               <Link
                 to="/profile"
@@ -317,7 +317,7 @@ const Navbar = () => {
             </>
           )}
 
-          <div className="hidden md:block w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
+          <div className="w-px h-6 md:h-8 bg-gray-300/50 dark:bg-gray-700/50 mx-0.5 md:mx-1 flex-shrink-0"></div>
 
           <button
             onClick={toggleTheme}
