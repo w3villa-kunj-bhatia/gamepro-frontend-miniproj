@@ -368,7 +368,8 @@ const Profile = () => {
 
     try {
       setIsDownloading(true);
-      await new Promise((resolve) => setTimeout(resolve, 500));
+
+      await new Promise((resolve) => setTimeout(resolve, 800));
 
       const canvas = await html2canvas(element, {
         scale: 2,
@@ -379,16 +380,42 @@ const Profile = () => {
         windowWidth: 1600,
         ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
         onclone: (clonedDoc) => {
-          const clonedElement = clonedDoc.getElementById("profile-identity");
-          if (clonedElement) {
-            clonedElement.style.width = "1200px";
-            clonedElement.style.maxWidth = "none";
-            clonedElement.style.margin = "0 auto";
-            clonedElement.style.padding = "20px";
+          const clonedContainer = clonedDoc.getElementById("profile-identity");
+          if (clonedContainer) {
+            clonedContainer.style.width = "1200px";
+            clonedContainer.style.maxWidth = "none";
+            clonedContainer.style.margin = "0";
+            clonedContainer.style.padding = "20px";
+            clonedContainer.style.display = "grid";
+            clonedContainer.style.gridTemplateColumns = "repeat(4, 1fr)";
+            clonedContainer.style.gap = "1rem";
 
-            clonedElement.style.display = "grid";
-            clonedElement.style.gridTemplateColumns =
-              "repeat(4, minmax(0, 1fr))";
+            const children = Array.from(clonedContainer.children);
+
+            if (children[0]) {
+              children[0].style.gridColumn = "span 1";
+              children[0].style.gridRow = "span 3";
+            }
+
+            if (children[1]) {
+              children[1].style.gridColumn = "span 1";
+            }
+
+            if (children[2]) {
+              children[2].style.gridColumn = "span 2";
+            }
+
+            if (children[3]) {
+              children[3].style.gridColumn = "span 3";
+            }
+
+            if (children[4]) {
+              children[4].style.gridColumn = "span 1";
+            }
+
+            if (children[5]) {
+              children[5].style.gridColumn = "span 2";
+            }
           }
 
           const style = clonedDoc.createElement("style");
@@ -426,7 +453,7 @@ const Profile = () => {
 
       pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
       pdf.save(`${profile.username || "Operative"}_Profile.pdf`);
-      toast.success("Profile screenshot captured successfully.");
+      toast.success("Profile capture successful.");
     } catch (error) {
       console.error("PDF Generation Error:", error);
       toast.error("Failed to generate PDF. Check console for details.");
