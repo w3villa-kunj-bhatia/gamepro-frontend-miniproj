@@ -215,28 +215,33 @@ const CreateProfile = () => {
   if (loading || !isLoaded) return <Loader />;
 
   return (
-    <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-20 transition-colors duration-300">
+    <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-12 transition-colors duration-300">
+      <div className="px-6 pb-2 pt-4 lg:px-10">
+        <h2 className="text-2xl font-black uppercase tracking-tighter text-indigo-600 dark:text-white">
+          Operative Profile
+        </h2>
+        <p className="text-slate-500 text-sm">
+          Configure your identity and arsenal.
+        </p>
+      </div>
+
       <form
         onSubmit={handleSubmit}
-        className="flex-1 max-w-7xl w-full mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden"
+        className="flex-1 flex flex-col overflow-hidden px-4 pb-4 lg:px-10 lg:pb-6"
       >
-        <div
-          className={`lg:col-span-5 flex flex-col gap-6 h-full ${scrollbarStyles} pb-20`}
-        >
-          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
-            <h2 className="text-2xl font-black uppercase tracking-tighter mb-1 text-indigo-600 dark:text-white">
-              Operative Profile
-            </h2>
-            <p className="text-slate-500 text-sm mb-6">
-              Configure your identity and location.
-            </p>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-hidden min-h-0">
+          <div
+            className={`bg-white dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm flex flex-col overflow-hidden`}
+          >
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                Identity Module
+              </h3>
+            </div>
 
-            <div className="mb-6 p-4 bg-slate-100 dark:bg-slate-800/30 rounded-xl border border-slate-200 dark:border-slate-700/50">
-              <label className="text-xs font-bold block mb-3 uppercase text-slate-500 dark:text-slate-400">
-                Profile Avatar
-              </label>
-              <div className="flex items-center gap-4">
-                <div className="relative w-20 h-20 shrink-0">
+            <div className={`p-6 space-y-6 overflow-y-auto ${scrollbarStyles}`}>
+              <div className="flex flex-col sm:flex-row items-center gap-6 p-4 bg-slate-50 dark:bg-slate-800/30 rounded-2xl border border-slate-200 dark:border-slate-700/50">
+                <div className="relative w-24 h-24 shrink-0 group">
                   <img
                     src={
                       avatarFile
@@ -245,276 +250,287 @@ const CreateProfile = () => {
                           "https://via.placeholder.com/200x200"
                     }
                     alt="Avatar"
-                    className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-700 shadow-md bg-slate-200 dark:bg-slate-800"
+                    className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-700 shadow-lg"
                   />
+                  <div className="absolute inset-0 rounded-full bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                <div className="flex-1">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-indigo-600 file:text-white hover:file:bg-indigo-500 cursor-pointer"
-                    onChange={(e) => setAvatarFile(e.target.files[0])}
-                  />
+                <div className="flex-1 w-full text-center sm:text-left">
+                  <label className="cursor-pointer inline-block px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold uppercase tracking-wider rounded-lg transition-colors">
+                    Upload New Photo
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => setAvatarFile(e.target.files[0])}
+                    />
+                  </label>
                   <p className="text-[10px] text-slate-400 mt-2">
-                    Max size 2MB. Supports PNG, JPG.
+                    Supports JPG, PNG (Max 2MB)
                   </p>
                 </div>
               </div>
-            </div>
 
-            <div className="mb-4">
-              <label className="text-xs font-semibold ml-1 mb-1 block text-slate-500 dark:text-slate-400">
-                Codename / Username
-              </label>
-              <input
-                required
-                value={formData.username}
-                placeholder="e.g. ShadowHunter"
-                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
-                onChange={(e) =>
-                  setFormData({ ...formData, username: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="mb-2">
-              <label className="text-xs font-semibold ml-1 mb-1 block text-slate-500 dark:text-slate-400">
-                Base Location
-              </label>
-              <Autocomplete
-                onLoad={(autocomplete) =>
-                  (autocompleteRef.current = autocomplete)
-                }
-                onPlaceChanged={onPlaceChanged}
-              >
-                <input
-                  required
-                  value={formData.address}
-                  placeholder="Start typing your city..."
-                  className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 mb-3 text-slate-900 dark:text-slate-100"
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
-                />
-              </Autocomplete>
-
-              {formData.coordinates.lat !== 0 && (
-                <div className="w-full h-40 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner">
-                  <GoogleMap
-                    mapContainerStyle={{ width: "100%", height: "100%" }}
-                    center={formData.coordinates}
-                    zoom={13}
-                    onLoad={(map) => setMapInstance(map)}
-                    options={{
-                      disableDefaultUI: true,
-                      zoomControl: true,
-                      mapId: "DEMO_MAP_ID",
-                    }}
-                  >
-                    <CustomMarker
-                      position={formData.coordinates}
-                      map={mapInstance}
-                    />
-                  </GoogleMap>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-semibold ml-1 mb-1.5 block text-slate-500 dark:text-slate-400">
+                    Codename / Username
+                  </label>
+                  <input
+                    required
+                    value={formData.username}
+                    className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 text-sm p-4 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
+                    placeholder="e.g. ShadowHunter"
+                    onChange={(e) =>
+                      setFormData({ ...formData, username: e.target.value })
+                    }
+                  />
                 </div>
-              )}
+
+                <div>
+                  <label className="text-xs font-semibold ml-1 mb-1.5 block text-slate-500 dark:text-slate-400">
+                    Base Location
+                  </label>
+                  <Autocomplete
+                    onLoad={(autocomplete) =>
+                      (autocompleteRef.current = autocomplete)
+                    }
+                    onPlaceChanged={onPlaceChanged}
+                  >
+                    <input
+                      required
+                      value={formData.address}
+                      placeholder="Search city..."
+                      className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 text-sm p-4 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 mb-3 text-slate-900 dark:text-slate-100"
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
+                    />
+                  </Autocomplete>
+
+                  {formData.coordinates.lat !== 0 && (
+                    <div className="w-full h-48 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner mt-2">
+                      <GoogleMap
+                        mapContainerStyle={{ width: "100%", height: "100%" }}
+                        center={formData.coordinates}
+                        zoom={13}
+                        onLoad={(map) => setMapInstance(map)}
+                        options={{
+                          disableDefaultUI: true,
+                          zoomControl: true,
+                          mapId: "DEMO_MAP_ID",
+                        }}
+                      >
+                        <CustomMarker
+                          position={formData.coordinates}
+                          map={mapInstance}
+                        />
+                      </GoogleMap>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`bg-white dark:bg-slate-900/50 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm flex flex-col overflow-hidden`}
+          >
+            <div className="p-4 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">
+                Arsenal Module
+              </h3>
+            </div>
+
+            <div className={`p-6 space-y-8 overflow-y-auto ${scrollbarStyles}`}>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-indigo-500 uppercase tracking-wider">
+                    Active Games
+                  </label>
+                </div>
+
+                <div className="relative group z-20">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <SearchIcon />
+                  </div>
+                  <input
+                    value={gameSearch}
+                    onChange={(e) => setGameSearch(e.target.value)}
+                    placeholder="Add game..."
+                    className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-11 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
+                  />
+                  {gameResults.length > 0 && (
+                    <div
+                      className={`absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-56 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                    >
+                      {gameResults.map((g) => (
+                        <div
+                          key={g.id}
+                          onClick={() => addGame(g)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                        >
+                          <img
+                            src={
+                              g.cover?.url || "https://via.placeholder.com/40"
+                            }
+                            alt=""
+                            className="w-6 h-8 object-cover rounded bg-slate-200"
+                          />
+                          <span className="text-sm font-medium">{g.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 pt-2">
+                  {formData.games.map((g, i) => (
+                    <div
+                      key={i}
+                      className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-sm"
+                    >
+                      <img
+                        src={g.coverUrl}
+                        alt={g.name}
+                        className="w-full h-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            games: formData.games.filter((_, idx) => idx !== i),
+                          })
+                        }
+                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {formData.games.length === 0 && (
+                    <div className="col-span-full py-6 text-center border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-400">
+                      No games configured
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-indigo-500 uppercase tracking-wider">
+                    Top Agents
+                  </label>
+                </div>
+
+                <div className="relative z-10">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <SearchIcon />
+                  </div>
+                  <input
+                    value={charSearch}
+                    onChange={(e) => setCharSearch(e.target.value)}
+                    placeholder="Add agent..."
+                    className="w-full bg-slate-50 dark:bg-slate-950/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-11 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
+                  />
+                  {charResults.length > 0 && (
+                    <div
+                      className={`absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                    >
+                      {charResults.map((c) => (
+                        <div
+                          key={c.id}
+                          onClick={() => addCharacter(c)}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 last:border-0"
+                        >
+                          <img
+                            src={
+                              c.mug_shot?.url ||
+                              "https://via.placeholder.com/30"
+                            }
+                            alt=""
+                            className="w-8 h-8 rounded-full object-cover"
+                          />
+                          <span className="text-sm font-medium">{c.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {formData.topCharacters.map((c, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 pl-1 pr-2 py-1 rounded-full border border-slate-200 dark:border-slate-700"
+                    >
+                      <img
+                        src={c.imageUrl}
+                        alt=""
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                      <span className="text-[10px] font-bold uppercase">
+                        {c.name}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setFormData({
+                            ...formData,
+                            topCharacters: formData.topCharacters.filter(
+                              (_, idx) => idx !== i,
+                            ),
+                          })
+                        }
+                        className="hover:text-red-500"
+                      >
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
+                  {formData.topCharacters.length === 0 && (
+                    <div className="text-xs text-slate-400 italic">
+                      No agents selected
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div
-          className={`lg:col-span-7 flex flex-col h-full gap-6 ${scrollbarStyles} pb-24`}
-        >
-          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
-            <h3 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-4">
-              Deployed Arsenal (Games)
-            </h3>
-
-            <div className="relative group mb-4">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <SearchIcon />
-              </div>
-              <input
-                value={gameSearch}
-                onChange={(e) => setGameSearch(e.target.value)}
-                placeholder="Search game database..."
-                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
-              />
-
-              {gameResults.length > 0 && (
-                <div
-                  className={`absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
-                >
-                  {gameResults.map((g) => (
-                    <div
-                      key={g.id}
-                      onClick={() => addGame(g)}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 hover:text-indigo-700 dark:hover:text-white cursor-pointer text-sm border-b border-slate-100 dark:border-slate-700/50 last:border-0 transition-colors"
-                    >
-                      <img
-                        src={g.cover?.url || "https://via.placeholder.com/40"}
-                        alt={g.name}
-                        className="w-8 h-10 object-cover rounded bg-slate-200 dark:bg-slate-700"
-                      />
-                      <span>{g.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3">
-              {formData.games.map((g, i) => (
-                <div
-                  key={i}
-                  className="relative group aspect-[3/4] rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700 shadow-md hover:shadow-xl transition-all"
-                >
-                  <img
-                    src={g.coverUrl}
-                    alt={g.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setFormData({
-                          ...formData,
-                          games: formData.games.filter((_, idx) => idx !== i),
-                        })
-                      }
-                      className="bg-red-500/90 text-white p-1.5 rounded-full hover:bg-red-600 transform scale-90 hover:scale-100 transition-all"
-                      title="Remove Game"
-                    >
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M6 18L18 6M6 6l12 12"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="absolute bottom-0 w-full bg-gradient-to-t from-black/90 to-transparent p-2">
-                    <p className="text-[10px] font-bold text-white truncate text-center">
-                      {g.name}
-                    </p>
-                  </div>
-                </div>
-              ))}
-              {formData.games.length === 0 && (
-                <div className="col-span-full border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-8 flex items-center justify-center text-slate-400 text-xs">
-                  No games selected
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white dark:bg-slate-900/50 p-6 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm">
-            <h3 className="text-xs font-bold text-indigo-500 uppercase tracking-widest mb-4">
-              Top Agents (Characters)
-            </h3>
-
-            <div className="relative mb-4">
-              <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                <SearchIcon />
-              </div>
-              <input
-                value={charSearch}
-                onChange={(e) => setCharSearch(e.target.value)}
-                placeholder="Search character database..."
-                className="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-400 dark:placeholder:text-slate-600 text-slate-900 dark:text-slate-100"
-              />
-
-              {charResults.length > 0 && (
-                <div
-                  className={`absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
-                >
-                  {charResults.map((char) => (
-                    <div
-                      key={char.id}
-                      onClick={() => addCharacter(char)}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-50 dark:hover:bg-indigo-600 hover:text-indigo-700 dark:hover:text-white cursor-pointer text-sm border-b border-slate-100 dark:border-slate-700/50 last:border-0 transition-colors"
-                    >
-                      <img
-                        src={
-                          char.mug_shot?.url || "https://via.placeholder.com/40"
-                        }
-                        alt={char.name}
-                        className="w-8 h-8 rounded-full object-cover bg-slate-200 dark:bg-slate-700"
-                      />
-                      <span>{char.name}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {formData.topCharacters.map((c, i) => (
-                <div
-                  key={i}
-                  className="group relative flex items-center gap-2 bg-slate-100 dark:bg-slate-800/80 pl-1 pr-3 py-1 rounded-full border border-slate-200 dark:border-slate-700 hover:border-indigo-500 transition-colors"
-                >
-                  <img
-                    src={c.imageUrl}
-                    alt={c.name}
-                    className="w-8 h-8 rounded-full object-cover border border-slate-300 dark:border-slate-600 group-hover:border-indigo-400"
-                  />
-                  <span className="text-[11px] font-bold text-slate-700 dark:text-slate-200">
-                    {c.name}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({
-                        ...formData,
-                        topCharacters: formData.topCharacters.filter(
-                          (_, idx) => idx !== i,
-                        ),
-                      })
-                    }
-                    className="ml-1 text-slate-400 hover:text-red-500 transition-colors"
-                  >
-                    <svg
-                      className="w-3 h-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              ))}
-              {formData.topCharacters.length === 0 && (
-                <div className="text-slate-400 text-xs italic py-2">
-                  No agents selected.
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-auto pt-6 flex justify-end">
-            <button
-              type="submit"
-              disabled={saving}
-              className="w-full md:w-auto px-8 py-4 bg-indigo-600 text-white rounded-xl font-bold uppercase tracking-widest text-sm hover:bg-indigo-500 hover:shadow-lg hover:shadow-indigo-600/30 transition-all disabled:bg-slate-700 disabled:text-slate-400 disabled:cursor-not-allowed"
-            >
-              {saving ? "Synchronizing Data..." : "Finalize Profile"}
-            </button>
-          </div>
+        <div className="pt-4 flex justify-center shrink-0">
+          <button
+            type="submit"
+            disabled={saving}
+            className="w-full max-w-md bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-600/20 disabled:opacity-50 disabled:cursor-not-allowed transition-all transform active:scale-95 uppercase tracking-widest text-sm"
+          >
+            {saving ? "Synchronizing..." : "Finalize Profile"}
+          </button>
         </div>
       </form>
     </div>
