@@ -49,6 +49,43 @@ const planConfigs = {
   },
 };
 
+const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-scale-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          Confirm Logout
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+          Are you sure you want to end your session? You will need to login
+          again to access your squadron.
+        </p>
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all active:scale-95"
+          >
+            Yes, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   if (!profile) return null;
 
@@ -238,6 +275,7 @@ const Dashboard = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [searchInput, setSearchInput] = useState(searchQuery);
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const LIMIT = 6;
 
   const currentPlan = user?.plan || "free";
@@ -330,7 +368,9 @@ const Dashboard = () => {
     return () => clearTimeout(delayDebounceFn);
   }, [searchInput]);
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleConfirmLogout = async () => {
+    setShowLogoutModal(false);
     await logout();
     navigate("/login");
   };
@@ -395,7 +435,7 @@ const Dashboard = () => {
           </p>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="hidden md:block bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 transition-all active:scale-95"
         >
           Logout
@@ -659,6 +699,12 @@ const Dashboard = () => {
           onToggleSave={(e) => handleToggleSave(selectedProfile._id, e)}
         />
       )}
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
   );
 };

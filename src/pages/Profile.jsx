@@ -93,41 +93,53 @@ const mapStyles = [
     stylers: [{ color: "#212a37" }],
   },
   {
-    featureType: "road",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#9ca5b3" }],
-  },
-  {
     featureType: "road.highway",
     elementType: "geometry",
     stylers: [{ color: "#746855" }],
   },
   {
-    featureType: "road.highway",
-    elementType: "geometry.stroke",
-    stylers: [{ color: "#1f2835" }],
-  },
-  {
-    featureType: "road.highway",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#f3d19c" }],
-  },
-  {
     featureType: "water",
     elementType: "geometry",
     stylers: [{ color: "#17263c" }],
   },
-  {
-    featureType: "water",
-    elementType: "labels.text.fill",
-    stylers: [{ color: "#515c6d" }],
-  },
-  {
-    featureType: "water",
-    elementType: "labels.text.stroke",
-    stylers: [{ color: "#17263c" }],
-  },
 ];
+
+const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
+  if (!isOpen) return null;
+  return (
+    <div
+      className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl shadow-2xl p-6 max-w-sm w-full animate-scale-up"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+          Confirm Logout
+        </h3>
+        <p className="text-gray-500 dark:text-gray-400 mb-6 text-sm">
+          Are you sure you want to end your session? You will need to login
+          again to access your squadron.
+        </p>
+        <div className="flex gap-3 justify-end">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-red-500 hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all active:scale-95"
+          >
+            Yes, Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   if (!profile) return null;
@@ -299,14 +311,15 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
 };
 
 const Profile = () => {
-  const { user: authUser, logout } = useAuth(); // Added logout here
-  const navigate = useNavigate(); // Added navigate
+  const { user: authUser, logout } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [savedProfiles, setSavedProfiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [timeLeft, setTimeLeft] = useState("");
   const [selectedProfile, setSelectedProfile] = useState(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const { isLoaded: isMapLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
@@ -362,7 +375,9 @@ const Profile = () => {
     return () => clearInterval(interval);
   }, [authUser]);
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => setShowLogoutModal(true);
+  const handleConfirmLogout = async () => {
+    setShowLogoutModal(false);
     await logout();
     navigate("/login");
   };
@@ -400,53 +415,25 @@ const Profile = () => {
               children[0].style.gridColumn = "span 1";
               children[0].style.gridRow = "span 3";
             }
-            if (children[1]) {
-              children[1].style.gridColumn = "span 1";
-            }
-            if (children[2]) {
-              children[2].style.gridColumn = "span 2";
-            }
-            if (children[3]) {
-              children[3].style.gridColumn = "span 3";
-            }
-            if (children[4]) {
-              children[4].style.gridColumn = "span 1";
-            }
-            if (children[5]) {
-              children[5].style.gridColumn = "span 2";
-            }
           }
-
-          const style = clonedDoc.createElement("style");
-          style.innerHTML = `
-            ::-webkit-scrollbar { display: none !important; }
-            * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-          `;
-          clonedDoc.head.appendChild(style);
         },
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("l", "mm", "a4");
-
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-
       const margin = 10;
       const availableWidth = pageWidth - margin * 2;
       const availableHeight = pageHeight - margin * 2;
-
       const ratio = Math.min(
         availableWidth / imgWidth,
         availableHeight / imgHeight,
       );
-
       const finalWidth = imgWidth * ratio;
       const finalHeight = imgHeight * ratio;
-
       const x = (pageWidth - finalWidth) / 2;
       const y = (pageHeight - finalHeight) / 2;
 
@@ -455,7 +442,7 @@ const Profile = () => {
       toast.success("Profile capture successful.");
     } catch (error) {
       console.error("PDF Generation Error:", error);
-      toast.error("Failed to generate PDF. Check console for details.");
+      toast.error("Failed to generate PDF.");
     } finally {
       setIsDownloading(false);
     }
@@ -510,7 +497,7 @@ const Profile = () => {
           </p>
         </div>
         <button
-          onClick={handleLogout}
+          onClick={handleLogoutClick}
           className="hidden md:block bg-red-500 hover:bg-red-600 text-white px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg shadow-red-500/20 transition-all active:scale-95"
         >
           Logout
@@ -578,7 +565,6 @@ const Profile = () => {
                     zoom={13}
                     options={{
                       disableDefaultUI: true,
-                      styles: mapStyles,
                     }}
                   >
                     <Marker position={profile.coordinates} />
@@ -694,10 +680,6 @@ const Profile = () => {
             <span className={`${theme.textColor} font-bold`}>
               {currentPlan.toUpperCase()}
             </span>
-            .{" "}
-            {profile?.games?.length > 0
-              ? "Data nodes active."
-              : "Awaiting input."}
           </p>
         </div>
 
@@ -739,15 +721,6 @@ const Profile = () => {
                       <p className="text-[10px] font-bold text-white leading-tight truncate w-full">
                         {item.profile?.username || "Operative"}
                       </p>
-                      <span className="text-[8px] text-indigo-400 uppercase tracking-wider mt-0.5">
-                        View
-                      </span>
-                    </div>
-                  )}
-
-                  {isLocked && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/40">
-                      <span className="text-2xl drop-shadow-lg">🔒</span>
                     </div>
                   )}
                 </div>
@@ -779,9 +752,6 @@ const Profile = () => {
                     <span className="text-[11px] font-bold uppercase tracking-tight text-gray-700 dark:text-slate-300 group-hover:text-indigo-600 dark:group-hover:text-white transition-colors">
                       {char.name}
                     </span>
-                    <span className="text-[8px] font-medium text-gray-400 dark:text-slate-500 uppercase group-hover:text-indigo-500 dark:group-hover:text-indigo-400 opacity-0 group-hover:opacity-100 transition-all">
-                      Active Unit
-                    </span>
                   </div>
                 </div>
               ))
@@ -806,6 +776,12 @@ const Profile = () => {
           onToggleSave={(e) => handleToggleSave(selectedProfile._id, e)}
         />
       )}
+
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
   );
 };
