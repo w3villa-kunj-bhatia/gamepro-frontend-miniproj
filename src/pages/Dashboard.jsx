@@ -372,7 +372,7 @@ const Dashboard = () => {
   const handleConfirmLogout = async () => {
     setShowLogoutModal(false);
     await logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const handleReaction = async (profileId, type) => {

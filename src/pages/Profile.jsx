@@ -379,7 +379,7 @@ const Profile = () => {
   const handleConfirmLogout = async () => {
     setShowLogoutModal(false);
     await logout();
-    navigate("/login");
+    navigate("/");
   };
 
   const downloadProfilePDF = async () => {
