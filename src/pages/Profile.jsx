@@ -371,43 +371,44 @@ const Profile = () => {
       await new Promise((resolve) => setTimeout(resolve, 500));
 
       const canvas = await html2canvas(element, {
-        scale: 3,
+        scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#020617",
         logging: false,
         ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
         onclone: (clonedDoc) => {
-          const usernameEl = clonedDoc.querySelector("#profile-identity h2");
-          if (usernameEl) {
-            usernameEl.classList.remove("truncate");
-            usernameEl.style.whiteSpace = "normal";
-            usernameEl.style.height = "auto";
-          }
-          const profileCard = clonedDoc.querySelector(
-            "#profile-identity > div:first-child",
-          );
+          const profileCard = clonedDoc.getElementById("profile-identity");
           if (profileCard) {
-            profileCard.style.backgroundColor = "#0f172a";
-            profileCard.style.backdropFilter = "none";
-          }
-          const badgeEl = clonedDoc.querySelector(".absolute.bottom-2.right-2");
-          if (badgeEl) {
-            badgeEl.style.zIndex = "50";
-            badgeEl.style.opacity = "1";
+            profileCard.style.borderRadius = "0";
+            profileCard.style.boxShadow = "none";
           }
         },
       });
 
       const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-      const imgProps = pdf.getImageProperties(imgData);
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      const pdf = new jsPDF("l", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
 
-      pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-      pdf.save(`${profile.username || "Operative"}_Identity.pdf`);
-      toast.success("Identity profile downloaded successfully.");
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+
+      const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+
+      const imgX = (pageWidth - imgWidth * ratio) / 2;
+      const imgY = 10;
+
+      pdf.addImage(
+        imgData,
+        "PNG",
+        imgX,
+        imgY,
+        imgWidth * ratio,
+        imgHeight * ratio,
+      );
+      pdf.save(`${profile.username || "Operative"}_Profile.pdf`);
+      toast.success("Profile screenshot captured successfully.");
     } catch (error) {
       console.error("PDF Generation Error:", error);
       toast.error("Failed to generate PDF. Check console for details.");
@@ -546,7 +547,7 @@ const Profile = () => {
                 disabled={isDownloading}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-400 dark:disabled:bg-slate-700 text-[10px] font-black uppercase tracking-[0.2em] py-3 rounded-xl transition-all shadow-lg shadow-indigo-600/20 text-white"
               >
-                {isDownloading ? "Generating..." : "Download Identity (PDF)"}
+                {isDownloading ? "Generating..." : "Capture Dashboard (PDF)"}
               </button>
             </div>
           </div>
