@@ -34,7 +34,7 @@ const ProtectedRoute = ({ children, adminOnly = false }) => {
   if (authLoading || profileLoading) return <Loader />;
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/" state={{ from: location }} replace />;
   }
 
   if (adminOnly && user.role !== "admin") {
