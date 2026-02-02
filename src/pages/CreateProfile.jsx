@@ -83,6 +83,9 @@ const CreateProfile = () => {
   const navigate = useNavigate();
   const { checkUser } = useAuth();
 
+  const scrollbarStyles =
+    "[&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-track]:bg-slate-800/50 [&::-webkit-scrollbar-thumb]:bg-slate-600 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-indigo-500 transition-colors";
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -218,7 +221,9 @@ const CreateProfile = () => {
   if (loading || !isLoaded) return <Loader />;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 pt-24 pb-12 overflow-y-auto">
+    <div
+      className={`min-h-screen bg-slate-950 text-slate-100 p-6 pt-12 pb-12 overflow-y-auto ${scrollbarStyles}`}
+    >
       <form
         onSubmit={handleSubmit}
         className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-900/50 backdrop-blur-sm p-8 rounded-3xl border border-slate-800 shadow-2xl"
@@ -343,7 +348,9 @@ const CreateProfile = () => {
               />
 
               {gameResults.length > 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl">
+                <div
+                  className={`absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-60 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                >
                   {gameResults.map((g) => (
                     <div
                       key={g.id}
@@ -362,7 +369,9 @@ const CreateProfile = () => {
               )}
             </div>
 
-            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-1">
+            <div
+              className={`grid grid-cols-3 sm:grid-cols-4 gap-3 max-h-[300px] overflow-y-auto pr-1 ${scrollbarStyles}`}
+            >
               {formData.games.map((g, i) => (
                 <div
                   key={i}
@@ -431,7 +440,9 @@ const CreateProfile = () => {
                 className="w-full bg-slate-800/50 border border-slate-700 text-sm p-3.5 pl-10 rounded-xl outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder:text-slate-600"
               />
               {charResults.length > 0 && (
-                <div className="absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl">
+                <div
+                  className={`absolute z-50 w-full mt-2 bg-slate-800/95 backdrop-blur border border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                >
                   {charResults.map((char) => (
                     <div
                       key={char.id}
