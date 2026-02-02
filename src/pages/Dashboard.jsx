@@ -49,7 +49,7 @@ const planConfigs = {
   },
 };
 
-const ProfileModal = ({ profile, onClose }) => {
+const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   if (!profile) return null;
 
   const currentPlan = profile.plan || profile.user?.plan || "free";
@@ -116,6 +116,25 @@ const ProfileModal = ({ profile, onClose }) => {
                 <span>📍</span> {profile.address}
               </div>
             )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave && onToggleSave(e);
+              }}
+              className={`mt-6 w-full max-w-[200px] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 ${
+                isSaved
+                  ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 group"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/30 hover:-translate-y-1"
+              }`}
+            >
+              <span className={isSaved ? "group-hover:hidden" : ""}>
+                {isSaved ? "✓ Saved" : "Save Profile"}
+              </span>
+              <span className={`hidden ${isSaved ? "group-hover:inline" : ""}`}>
+                Unsave
+              </span>
+            </button>
           </div>
         </div>
 
@@ -162,7 +181,7 @@ const ProfileModal = ({ profile, onClose }) => {
                   Top Agents
                 </h3>
               </div>
-
+              
               <div className="flex flex-wrap gap-3">
                 {profile.topCharacters?.length > 0 ? (
                   profile.topCharacters.map((c, i) => (
@@ -636,6 +655,8 @@ const Dashboard = () => {
         <ProfileModal
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
+          isSaved={mySavedIds.has(selectedProfile._id)}
+          onToggleSave={(e) => handleToggleSave(selectedProfile._id, e)}
         />
       )}
     </div>

@@ -129,7 +129,7 @@ const mapStyles = [
   },
 ];
 
-const ProfileModal = ({ profile, onClose }) => {
+const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   if (!profile) return null;
 
   const currentPlan = profile.plan || profile.user?.plan || "free";
@@ -196,6 +196,25 @@ const ProfileModal = ({ profile, onClose }) => {
                 <span>📍</span> {profile.address}
               </div>
             )}
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave && onToggleSave(e);
+              }}
+              className={`mt-6 w-full max-w-[200px] px-6 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wide transition-all shadow-lg flex items-center justify-center gap-2 ${
+                isSaved
+                  ? "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 hover:bg-red-500 hover:text-white hover:border-red-500 group"
+                  : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-600/30 hover:-translate-y-1"
+              }`}
+            >
+              <span className={isSaved ? "group-hover:hidden" : ""}>
+                {isSaved ? "✓ Saved" : "Save Profile"}
+              </span>
+              <span className={`hidden ${isSaved ? "group-hover:inline" : ""}`}>
+                Unsave
+              </span>
+            </button>
           </div>
         </div>
 
@@ -394,6 +413,33 @@ const Profile = () => {
       toast.error("Failed to generate PDF. Check console for details.");
     } finally {
       setIsDownloading(false);
+    }
+  };
+
+  const handleToggleSave = async (profileId, e) => {
+    e?.stopPropagation();
+    const isSaved = savedProfiles.some(
+      (item) => item.profile._id === profileId,
+    );
+
+    try {
+      if (isSaved) {
+        await api.delete(`/saved-profiles/${profileId}`);
+        setSavedProfiles((prev) =>
+          prev.filter((item) => item.profile._id !== profileId),
+        );
+        toast.success("Operative removed from squadron.");
+      } else {
+        await api.post(`/saved-profiles/${profileId}`);
+        setSavedProfiles((prev) => [
+          ...prev,
+          { _id: Date.now(), profile: selectedProfile },
+        ]);
+        toast.success("Operative added to squadron.");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Action failed.");
     }
   };
 
@@ -692,6 +738,10 @@ const Profile = () => {
         <ProfileModal
           profile={selectedProfile}
           onClose={() => setSelectedProfile(null)}
+          isSaved={savedProfiles.some(
+            (p) => p.profile._id === selectedProfile._id,
+          )}
+          onToggleSave={(e) => handleToggleSave(selectedProfile._id, e)}
         />
       )}
     </div>
