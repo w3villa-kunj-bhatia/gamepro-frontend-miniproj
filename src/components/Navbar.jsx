@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import { useAuth } from "../auth/AuthContext";
 import { useEffect, useState } from "react";
@@ -88,6 +88,7 @@ const Navbar = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { user, logout, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [profileData, setProfileData] = useState({
     avatar: null,
@@ -125,6 +126,11 @@ const Navbar = () => {
   if (loading || hideNavbarPaths.includes(location.pathname)) {
     return null;
   }
+
+  const handleLogout = async () => {
+    await logout();
+    navigate("/");
+  };
 
   const DockItem = ({ to, onClick, icon, label, isActive, colorClass }) => {
     const baseClass =
@@ -241,7 +247,7 @@ const Navbar = () => {
             </Link>
 
             <DockItem
-              onClick={logout}
+              onClick={handleLogout}
               icon={<LogoutIcon />}
               label="Logout"
               isActive={false}
