@@ -376,37 +376,55 @@ const Profile = () => {
         allowTaint: true,
         backgroundColor: "#020617",
         logging: false,
+        windowWidth: 1600,
         ignoreElements: (el) => el.classList.contains("download-btn-wrapper"),
         onclone: (clonedDoc) => {
-          const profileCard = clonedDoc.getElementById("profile-identity");
-          if (profileCard) {
-            profileCard.style.borderRadius = "0";
-            profileCard.style.boxShadow = "none";
+          const clonedElement = clonedDoc.getElementById("profile-identity");
+          if (clonedElement) {
+            clonedElement.style.width = "1200px";
+            clonedElement.style.maxWidth = "none";
+            clonedElement.style.margin = "0 auto";
+            clonedElement.style.padding = "20px";
+
+            clonedElement.style.display = "grid";
+            clonedElement.style.gridTemplateColumns =
+              "repeat(4, minmax(0, 1fr))";
           }
+
+          const style = clonedDoc.createElement("style");
+          style.innerHTML = `
+            ::-webkit-scrollbar { display: none !important; }
+            * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+          `;
+          clonedDoc.head.appendChild(style);
         },
       });
 
       const imgData = canvas.toDataURL("image/png");
       const pdf = new jsPDF("l", "mm", "a4");
+
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
 
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
 
-      const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
+      const margin = 10;
+      const availableWidth = pageWidth - margin * 2;
+      const availableHeight = pageHeight - margin * 2;
 
-      const imgX = (pageWidth - imgWidth * ratio) / 2;
-      const imgY = 10;
-
-      pdf.addImage(
-        imgData,
-        "PNG",
-        imgX,
-        imgY,
-        imgWidth * ratio,
-        imgHeight * ratio,
+      const ratio = Math.min(
+        availableWidth / imgWidth,
+        availableHeight / imgHeight,
       );
+
+      const finalWidth = imgWidth * ratio;
+      const finalHeight = imgHeight * ratio;
+
+      const x = (pageWidth - finalWidth) / 2;
+      const y = (pageHeight - finalHeight) / 2;
+
+      pdf.addImage(imgData, "PNG", x, y, finalWidth, finalHeight);
       pdf.save(`${profile.username || "Operative"}_Profile.pdf`);
       toast.success("Profile screenshot captured successfully.");
     } catch (error) {
