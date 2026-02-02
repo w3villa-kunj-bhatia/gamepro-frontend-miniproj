@@ -52,18 +52,18 @@ const planConfigs = {
 const ProfileModal = ({ profile, onClose }) => {
   if (!profile) return null;
 
-  const currentPlan = profile.plan || "free";
+  const currentPlan = profile.plan || profile.user?.plan || "free";
   const theme = planConfigs[currentPlan] || planConfigs.free;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
       <div
-        className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
+        className="relative w-full max-w-4xl bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-slide-up flex flex-col md:flex-row"
         onClick={(e) => e.stopPropagation()}
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 p-2 bg-black/40 hover:bg-black/60 text-white rounded-full transition-colors border border-white/10"
+          className="absolute top-4 right-4 z-20 p-2 bg-gray-100 dark:bg-black/40 hover:bg-gray-200 dark:hover:bg-black/60 text-gray-600 dark:text-white rounded-full transition-colors border border-transparent dark:border-white/10"
         >
           <svg
             className="w-5 h-5"
@@ -80,7 +80,7 @@ const ProfileModal = ({ profile, onClose }) => {
           </svg>
         </button>
 
-        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-700/50 bg-slate-900/50">
+        <div className="w-full md:w-1/3 relative p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50">
           <div
             className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
           />
@@ -93,16 +93,16 @@ const ProfileModal = ({ profile, onClose }) => {
                   `https://ui-avatars.com/api/?name=${profile.username}&background=random`
                 }
                 alt={profile.username}
-                className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-slate-800`}
+                className={`w-32 h-32 rounded-full border-4 ${theme.borderColor} shadow-2xl object-cover bg-white dark:bg-slate-800`}
               />
               <div
-                className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-slate-900 flex items-center justify-center text-lg shadow-lg`}
+                className={`absolute bottom-0 right-0 w-10 h-10 ${theme.iconBg} rounded-full border-4 border-white dark:border-slate-900 flex items-center justify-center text-lg shadow-lg`}
               >
                 {theme.emoji}
               </div>
             </div>
 
-            <h2 className="text-3xl font-black text-white uppercase tracking-tighter text-center">
+            <h2 className="text-3xl font-black text-gray-900 dark:text-white uppercase tracking-tighter text-center">
               {profile.username}
             </h2>
             <span
@@ -112,19 +112,19 @@ const ProfileModal = ({ profile, onClose }) => {
             </span>
 
             {profile.address && (
-              <div className="flex items-center gap-2 mt-6 text-slate-400 text-sm font-medium bg-slate-800/50 px-4 py-2 rounded-xl border border-slate-700">
+              <div className="flex items-center gap-2 mt-6 text-gray-600 dark:text-slate-400 text-sm font-medium bg-white dark:bg-slate-800/50 px-4 py-2 rounded-xl border border-gray-200 dark:border-slate-700 shadow-sm dark:shadow-none">
                 <span>📍</span> {profile.address}
               </div>
             )}
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-8 bg-slate-900 relative overflow-y-auto max-h-[70vh]">
+        <div className="w-full md:w-2/3 p-8 bg-white dark:bg-slate-900 relative overflow-y-auto max-h-[70vh]">
           <div className="space-y-8">
             <div>
-              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">🎮</span>
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                <h3 className="text-xs font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest">
                   Identified Games ({profile.games?.length || 0})
                 </h3>
               </div>
@@ -133,7 +133,7 @@ const ProfileModal = ({ profile, onClose }) => {
                 {profile.games?.length > 0 ? (
                   profile.games.map((g, i) => (
                     <div key={i} className="group relative">
-                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-slate-700 shadow-md transition-all group-hover:border-indigo-500/50">
+                      <div className="aspect-[3/4] rounded-xl overflow-hidden border border-gray-200 dark:border-slate-700 shadow-md transition-all group-hover:border-indigo-500/50">
                         <img
                           src={g.coverUrl}
                           alt={g.name}
@@ -148,7 +148,7 @@ const ProfileModal = ({ profile, onClose }) => {
                     </div>
                   ))
                 ) : (
-                  <p className="col-span-full text-slate-600 text-sm italic py-4">
+                  <p className="col-span-full text-gray-500 dark:text-slate-600 text-sm italic py-4">
                     No games public.
                   </p>
                 )}
@@ -156,9 +156,9 @@ const ProfileModal = ({ profile, onClose }) => {
             </div>
 
             <div>
-              <div className="flex items-center gap-3 mb-4 border-b border-slate-800 pb-2">
+              <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">👥</span>
-                <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
+                <h3 className="text-xs font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest">
                   Top Agents
                 </h3>
               </div>
@@ -168,25 +168,25 @@ const ProfileModal = ({ profile, onClose }) => {
                   profile.topCharacters.map((c, i) => (
                     <div
                       key={i}
-                      className="flex items-center gap-3 bg-slate-800/50 px-3 py-2 rounded-xl border border-slate-700 hover:border-indigo-500/50 transition-colors"
+                      className="flex items-center gap-3 bg-gray-50 dark:bg-slate-800/50 px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-indigo-500/50 transition-colors"
                     >
                       <img
                         src={c.imageUrl}
                         alt={c.name}
-                        className="w-10 h-10 rounded-lg object-cover bg-slate-900"
+                        className="w-10 h-10 rounded-lg object-cover bg-gray-200 dark:bg-slate-900"
                       />
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold text-slate-300 leading-tight">
+                        <span className="text-xs font-bold text-gray-700 dark:text-slate-300 leading-tight">
                           {c.name}
                         </span>
-                        <span className="text-[10px] text-slate-500 uppercase">
+                        <span className="text-[10px] text-gray-500 dark:text-slate-500 uppercase">
                           Deployed
                         </span>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <p className="text-slate-600 text-sm italic py-4">
+                  <p className="text-gray-500 dark:text-slate-600 text-sm italic py-4">
                     No agents deployed.
                   </p>
                 )}
@@ -198,7 +198,6 @@ const ProfileModal = ({ profile, onClose }) => {
     </div>
   );
 };
-
 const Dashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
