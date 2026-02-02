@@ -348,9 +348,14 @@ const CreateProfile = () => {
                     <div
                       key={g.id}
                       onClick={() => addGame(g)}
-                      className="px-4 py-3 hover:bg-indigo-600 hover:text-white cursor-pointer text-sm border-b border-slate-700/50 last:border-0 transition-colors"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-indigo-600 hover:text-white cursor-pointer text-sm border-b border-slate-700/50 last:border-0 transition-colors"
                     >
-                      {g.name}
+                      <img
+                        src={g.cover?.url || "https://via.placeholder.com/40"}
+                        alt={g.name}
+                        className="w-8 h-10 object-cover rounded bg-slate-700"
+                      />
+                      <span>{g.name}</span>
                     </div>
                   ))}
                 </div>
