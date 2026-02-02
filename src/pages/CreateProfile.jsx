@@ -48,7 +48,6 @@ const CreateProfile = () => {
   });
 
   const [mapCenter, setMapCenter] = useState({ lat: 20.5937, lng: 78.9629 });
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -78,7 +77,7 @@ const CreateProfile = () => {
       setLoadingGames(true);
       try {
         const res = await api.get(
-          `/igdb/games?search=${encodeURIComponent(debouncedGameQuery)}`,
+          `/igdb/search?q=${encodeURIComponent(debouncedGameQuery)}`,
         );
         setGameResults(res.data.data || []);
       } catch (err) {
@@ -100,7 +99,7 @@ const CreateProfile = () => {
       setLoadingChars(true);
       try {
         const res = await api.get(
-          `/igdb/characters?search=${encodeURIComponent(debouncedCharQuery)}`,
+          `/igdb/characters?q=${encodeURIComponent(debouncedCharQuery)}`,
         );
         setCharResults(res.data.data || []);
       } catch (err) {
@@ -273,7 +272,7 @@ const CreateProfile = () => {
                   <li
                     key={game.gameId}
                     onClick={() => addGame(game)}
-                    className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-slate-700 last:border-0 flex items-center gap-3"
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-slate-700 last:border-0 flex items-center gap-3"
                   >
                     <img
                       src={
@@ -281,9 +280,9 @@ const CreateProfile = () => {
                         "https://via.placeholder.com/40x60?text=?"
                       }
                       alt={game.name}
-                      className="w-8 h-10 object-cover rounded shadow-sm bg-gray-200 dark:bg-slate-600"
+                      className="w-8 h-10 object-cover rounded bg-gray-200 dark:bg-slate-600"
                     />
-                    <span className="font-medium">{game.name}</span>
+                    <span className="font-medium text-sm">{game.name}</span>
                   </li>
                 ))}
               </ul>
@@ -335,7 +334,7 @@ const CreateProfile = () => {
                   <li
                     key={char.characterId}
                     onClick={() => addCharacter(char)}
-                    className="px-4 py-3 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-slate-700 last:border-0 flex items-center gap-3"
+                    className="px-4 py-2 hover:bg-gray-100 dark:hover:bg-slate-700 cursor-pointer transition-colors border-b border-gray-100 dark:border-slate-700 last:border-0 flex items-center gap-3"
                   >
                     <img
                       src={
@@ -343,9 +342,9 @@ const CreateProfile = () => {
                         "https://via.placeholder.com/40x40?text=?"
                       }
                       alt={char.name}
-                      className="w-8 h-8 object-cover rounded-full border border-gray-200 dark:border-slate-600 bg-gray-200 dark:bg-slate-600"
+                      className="w-8 h-8 object-cover rounded-full bg-gray-200 dark:bg-slate-600"
                     />
-                    <span className="font-medium">{char.name}</span>
+                    <span className="font-medium text-sm">{char.name}</span>
                   </li>
                 ))}
               </ul>
