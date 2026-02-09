@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLoadScript, GoogleMap, Marker } from "@react-google-maps/api";
 import api from "../api/axios";
@@ -144,8 +144,47 @@ const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
 const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
   if (!profile) return null;
 
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState("");
+  const [loadingComments, setLoadingComments] = useState(false);
+  const commentsEndRef = useRef(null);
+
   const currentPlan = profile.plan || profile.user?.plan || "free";
   const theme = planConfigs[currentPlan] || planConfigs.free;
+
+  useEffect(() => {
+    if (profile._id) {
+      fetchComments();
+    }
+  }, [profile._id]);
+
+  const fetchComments = async () => {
+    try {
+      setLoadingComments(true);
+      const res = await api.get(`/comments/${profile._id}`);
+      setComments(res.data.data);
+    } catch (err) {
+      console.error("Failed to load comms", err);
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handlePostComment = async (e) => {
+    e.preventDefault();
+    if (!commentText.trim()) return;
+
+    try {
+      const res = await api.post(`/comments/${profile._id}`, {
+        text: commentText,
+      });
+      setComments([res.data.data, ...comments]);
+      setCommentText("");
+      toast.success("Transmission successful.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Transmission failed.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 dark:bg-slate-950/80 backdrop-blur-sm animate-fade-in">
@@ -172,12 +211,12 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </svg>
         </button>
 
-        <div className="w-full md:w-1/3 relative p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50 shrink-0">
+        <div className="w-full md:w-1/3 relative p-6 md:p-8 flex flex-col items-center justify-start border-b md:border-b-0 md:border-r border-gray-200 dark:border-slate-700/50 bg-gray-50 dark:bg-slate-900/50 shrink-0">
           <div
             className={`absolute inset-0 bg-gradient-to-b ${theme.gradient} opacity-50`}
           />
 
-          <div className="relative z-10 flex flex-col items-center">
+          <div className="relative z-10 flex flex-col items-center w-full">
             <div className="relative mb-6">
               <img
                 src={
@@ -230,8 +269,8 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
           </div>
         </div>
 
-        <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[70vh]">
-          <div className="space-y-8">
+        <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[90vh] custom-scrollbar">
+          <div className="space-y-8 pb-10">
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">🎮</span>
@@ -301,6 +340,91 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
                     No agents deployed.
                   </p>
                 )}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
+                <span className="text-xl">💬</span>
+                <h3 className="text-xs font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest">
+                  Comms Channel
+                </h3>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-slate-800/30 rounded-2xl p-4 border border-gray-100 dark:border-slate-800">
+                <form onSubmit={handlePostComment} className="flex gap-2 mb-6">
+                  <input
+                    type="text"
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    placeholder="Transmit encrypted message..."
+                    className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+                  />
+                  <button
+                    type="submit"
+                    disabled={!commentText.trim()}
+                    className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-400 text-white p-3 rounded-xl transition-colors shadow-lg shadow-indigo-600/20"
+                  >
+                    <svg
+                      className="w-5 h-5 rotate-90"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                      />
+                    </svg>
+                  </button>
+                </form>
+
+                <div className="space-y-4 max-h-[250px] overflow-y-auto custom-scrollbar pr-2">
+                  {loadingComments ? (
+                    <div className="flex justify-center py-4">
+                      <span className="text-xs animate-pulse text-gray-500">
+                        Decrypting streams...
+                      </span>
+                    </div>
+                  ) : comments.length > 0 ? (
+                    comments.map((comment) => (
+                      <div
+                        key={comment._id}
+                        className="flex gap-3 items-start animate-fade-in"
+                      >
+                        <img
+                          src={
+                            comment.authorProfile?.avatar ||
+                            `https://ui-avatars.com/api/?name=User`
+                          }
+                          alt="User"
+                          className="w-8 h-8 rounded-full bg-gray-200 object-cover border border-gray-200 dark:border-slate-700"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs font-bold text-gray-900 dark:text-white">
+                              {comment.authorProfile?.username ||
+                                "Unknown Operative"}
+                            </span>
+                            <span className="text-[10px] text-gray-400">
+                              {new Date(comment.createdAt).toLocaleDateString()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-3 py-2 rounded-r-xl rounded-bl-xl border border-gray-200 dark:border-slate-800 shadow-sm">
+                            {comment.text}
+                          </p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-center text-xs text-gray-400 dark:text-slate-600 py-4 italic">
+                      Channel silent. Be the first to transmit.
+                    </p>
+                  )}
+                  <div ref={commentsEndRef} />
+                </div>
               </div>
             </div>
           </div>
