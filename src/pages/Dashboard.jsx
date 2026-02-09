@@ -504,6 +504,11 @@ const Dashboard = () => {
       const res = await api.post(`/reactions/${profileId}`, { type });
       const { likes, dislikes } = res.data.data;
 
+      setMyReactions((prev) => ({
+        ...prev,
+        [profileId]: type,
+      }));
+
       setProfiles((prev) =>
         prev.map((p) => {
           if (p._id === profileId) {
@@ -749,16 +754,16 @@ const Dashboard = () => {
                   </p>
 
                   <div className="flex justify-between items-center border-t border-gray-100 dark:border-slate-800 pt-4 mt-2">
-                    <div className="flex gap-4">
+                    <div className="flex gap-2">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleReaction(profile._id, "like");
                         }}
-                        className={`flex items-center transition text-sm font-bold gap-1 ${
+                        className={`flex items-center justify-center px-3 py-1.5 rounded-lg transition-all text-xs font-bold gap-1 border ${
                           myReactions[profile._id] === "like"
-                            ? "text-green-600 dark:text-green-400"
-                            : "text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 border-green-200 dark:border-green-800"
+                            : "bg-transparent border-transparent text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
                         }`}
                       >
                         👍 {profile.likes || 0}
@@ -768,15 +773,15 @@ const Dashboard = () => {
                           e.stopPropagation();
                           handleReaction(profile._id, "dislike");
                         }}
-                        className={`flex items-center transition text-sm font-bold gap-1 ${
+                        className={`flex items-center justify-center px-3 py-1.5 rounded-lg transition-all text-xs font-bold gap-1 border ${
                           myReactions[profile._id] === "dislike"
-                            ? "text-red-500 dark:text-red-400"
-                            : "text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+                            ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800"
+                            : "bg-transparent border-transparent text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                         }`}
                       >
                         👎 {profile.dislikes || 0}
                       </button>
-                      <button className="flex items-center transition text-sm font-bold gap-1 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                      <button className="flex items-center justify-center px-3 py-1.5 rounded-lg transition-all text-xs font-bold gap-1 border border-transparent text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20">
                         💬 {profile.commentCount || 0}
                       </button>
                     </div>
