@@ -776,6 +776,9 @@ const Dashboard = () => {
                       >
                         👎 {profile.dislikes || 0}
                       </button>
+                      <button className="flex items-center transition text-sm font-bold gap-1 text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400">
+                        💬 {profile.commentCount || 0}
+                      </button>
                     </div>
 
                     <button
