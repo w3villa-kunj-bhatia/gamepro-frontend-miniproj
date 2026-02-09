@@ -465,6 +465,17 @@ const Dashboard = () => {
         if (res.data?.data) {
           const profileData = res.data.data.data || res.data.data;
           setProfiles(Array.isArray(profileData) ? profileData : []);
+
+          const initialReactions = {};
+          if (Array.isArray(profileData)) {
+            profileData.forEach((p) => {
+              if (p.userReaction) {
+                initialReactions[p._id] = p.userReaction;
+              }
+            });
+          }
+          setMyReactions((prev) => ({ ...prev, ...initialReactions }));
+
           setTotalPages(res.data.data.totalPages || 1);
         }
       } catch (err) {
