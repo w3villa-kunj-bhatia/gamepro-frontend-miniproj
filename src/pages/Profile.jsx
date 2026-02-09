@@ -271,6 +271,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
 
         <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[90vh] custom-scrollbar">
           <div className="space-y-8 pb-10">
+            {/* Games Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">🎮</span>
@@ -305,6 +306,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
               </div>
             </div>
 
+            {/* Agents Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">👥</span>
@@ -343,6 +345,7 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
               </div>
             </div>
 
+            {/* Comments Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">💬</span>
