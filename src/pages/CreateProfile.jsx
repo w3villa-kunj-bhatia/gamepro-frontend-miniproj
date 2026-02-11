@@ -262,7 +262,7 @@ const CreateProfile = () => {
                       onChange={(e) => setAvatarFile(e.target.files[0])}
                     />
                   </label>
-                  <p className="text-[10px] text-slate-400 mt-2 font-medium">
+                  <p className="text-[12px] text-slate-400 mt-2 font-medium">
                     Max 2MB (JPG/PNG)
                   </p>
                 </div>
