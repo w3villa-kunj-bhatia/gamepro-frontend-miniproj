@@ -271,7 +271,6 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
 
         <div className="w-full md:w-2/3 p-6 md:p-8 bg-white dark:bg-slate-900 relative md:overflow-y-auto md:max-h-[90vh] custom-scrollbar">
           <div className="space-y-8 pb-10">
-            {/* Games Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">🎮</span>
@@ -306,7 +305,6 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
               </div>
             </div>
 
-            {/* Agents Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">👥</span>
@@ -345,7 +343,6 @@ const ProfileModal = ({ profile, onClose, isSaved, onToggleSave }) => {
               </div>
             </div>
 
-            {/* Comments Section */}
             <div>
               <div className="flex items-center gap-3 mb-4 border-b border-gray-100 dark:border-slate-800 pb-2">
                 <span className="text-xl">💬</span>
@@ -448,6 +445,11 @@ const Profile = () => {
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  const [myComments, setMyComments] = useState([]);
+  const [myCommentText, setMyCommentText] = useState("");
+  const [loadingMyComments, setLoadingMyComments] = useState(false);
+  const myCommentsEndRef = useRef(null);
+
   const { isLoaded: isMapLoaded } = useLoadScript({
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
     libraries,
@@ -471,6 +473,12 @@ const Profile = () => {
     };
     fetchProfileData();
   }, []);
+
+  useEffect(() => {
+    if (profile?._id) {
+      fetchMyComments();
+    }
+  }, [profile?._id]);
 
   useEffect(() => {
     if (!authUser?.planExpiresAt || authUser.plan === "free") {
@@ -501,6 +509,34 @@ const Profile = () => {
 
     return () => clearInterval(interval);
   }, [authUser]);
+
+  const fetchMyComments = async () => {
+    try {
+      setLoadingMyComments(true);
+      const res = await api.get(`/comments/${profile._id}`);
+      setMyComments(res.data.data);
+    } catch (err) {
+      console.error("Failed to load my comments", err);
+    } finally {
+      setLoadingMyComments(false);
+    }
+  };
+
+  const handlePostMyComment = async (e) => {
+    e.preventDefault();
+    if (!myCommentText.trim()) return;
+
+    try {
+      const res = await api.post(`/comments/${profile._id}`, {
+        text: myCommentText,
+      });
+      setMyComments([res.data.data, ...myComments]);
+      setMyCommentText("");
+      toast.success("Transmission successful.");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Transmission failed.");
+    }
+  };
 
   const handleLogoutClick = () => setShowLogoutModal(true);
   const handleConfirmLogout = async () => {
@@ -889,6 +925,88 @@ const Profile = () => {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+
+        <div className="md:col-span-2 lg:col-span-4 bg-white dark:bg-slate-900/50 border border-gray-200 dark:border-slate-800/80 rounded-3xl p-6 flex flex-col justify-start">
+          <span className="text-[10px] font-black text-gray-500 dark:text-slate-500 uppercase tracking-widest block mb-6">
+            Incoming Transmissions (Comments)
+          </span>
+
+          <div className="bg-gray-50 dark:bg-slate-800/30 rounded-2xl p-4 border border-gray-100 dark:border-slate-800">
+            <form onSubmit={handlePostMyComment} className="flex gap-2 mb-6">
+              <input
+                type="text"
+                value={myCommentText}
+                onChange={(e) => setMyCommentText(e.target.value)}
+                placeholder="Transmit encrypted message..."
+                className="flex-1 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all"
+              />
+              <button
+                type="submit"
+                disabled={!myCommentText.trim()}
+                className="bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-400 text-white p-3 rounded-xl transition-colors shadow-lg shadow-indigo-600/20"
+              >
+                <svg
+                  className="w-5 h-5 rotate-90"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                  />
+                </svg>
+              </button>
+            </form>
+
+            <div className="space-y-4 max-h-[300px] overflow-y-auto custom-scrollbar pr-2">
+              {loadingMyComments ? (
+                <div className="flex justify-center py-4">
+                  <span className="text-xs animate-pulse text-gray-500">
+                    Decrypting streams...
+                  </span>
+                </div>
+              ) : myComments.length > 0 ? (
+                myComments.map((comment) => (
+                  <div
+                    key={comment._id}
+                    className="flex gap-3 items-start animate-fade-in"
+                  >
+                    <img
+                      src={
+                        comment.authorProfile?.avatar ||
+                        `https://ui-avatars.com/api/?name=User`
+                      }
+                      alt="User"
+                      className="w-8 h-8 rounded-full bg-gray-200 object-cover border border-gray-200 dark:border-slate-700"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-bold text-gray-900 dark:text-white">
+                          {comment.authorProfile?.username ||
+                            "Unknown Operative"}
+                        </span>
+                        <span className="text-[10px] text-gray-400">
+                          {new Date(comment.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600 dark:text-slate-300 bg-white dark:bg-slate-900 px-3 py-2 rounded-r-xl rounded-bl-xl border border-gray-200 dark:border-slate-800 shadow-sm">
+                        {comment.text}
+                      </p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-center text-xs text-gray-400 dark:text-slate-600 py-4 italic">
+                  Channel silent. No incoming transmissions.
+                </p>
+              )}
+              <div ref={myCommentsEndRef} />
+            </div>
           </div>
         </div>
       </div>
