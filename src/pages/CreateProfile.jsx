@@ -332,7 +332,7 @@ const CreateProfile = () => {
           <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm flex flex-col overflow-hidden">
             <div className="p-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                Arsenal Module
+                Arsenal Module (You can only add 3 games on the free plan)
               </h3>
             </div>
 
@@ -424,7 +424,10 @@ const CreateProfile = () => {
               </div>
 
               <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-                <div className="relative z-10">
+                {/* FIX: Increased Z-Index to 50 to sit above other elements.
+                  The dropdown below will now render upwards (bottom-full) to avoid clipping.
+                */}
+                <div className="relative z-50">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <SearchIcon />
                   </div>
@@ -436,7 +439,10 @@ const CreateProfile = () => {
                   />
                   {charResults.length > 0 && (
                     <div
-                      className={`absolute left-0 right-0 top-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
+                      // FIX: Changed 'top-full mt-2' to 'bottom-full mb-2'
+                      // This forces the dropdown to open UPWARDS, preventing it from being
+                      // cut off by the overflow-hidden boundary of the parent container.
+                      className={`absolute left-0 right-0 bottom-full mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
                     >
                       {charResults.map((c) => (
                         <div
