@@ -567,7 +567,7 @@ const Dashboard = () => {
     <div className="p-6 bg-gray-50 dark:bg-slate-950 min-h-screen text-gray-900 dark:text-white transition-colors duration-300">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm">
+          <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm pr-2">
             Welcome to Gamepro, {user?.username || "Operative"}!
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">

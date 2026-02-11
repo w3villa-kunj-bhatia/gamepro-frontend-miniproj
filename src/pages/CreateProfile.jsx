@@ -217,8 +217,8 @@ const CreateProfile = () => {
   return (
     <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-12 pb-28 transition-colors duration-300">
       <div className="px-6 pb-4 shrink-0 max-w-[85%] mx-auto w-full">
-        <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm">
-          Operative Profile
+        <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm pr-2">
+          Create Operative Profile
         </h2>
         <p className="text-slate-500 text-xs sm:text-sm font-semibold tracking-wide uppercase mt-1">
           Configure Your Identity & Arsenal
