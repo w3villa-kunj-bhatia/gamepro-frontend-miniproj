@@ -147,7 +147,7 @@ const CreateProfile = () => {
   const addGame = (game) => {
     const cover =
       game.cover?.url?.replace("t_thumb", "t_cover_big") ||
-      "https://via.placeholder.com/150";
+      "https://placehold.co/150";
     if (!formData.games.find((g) => g.name === game.name)) {
       setFormData({
         ...formData,
@@ -217,7 +217,6 @@ const CreateProfile = () => {
   return (
     <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-12 pb-28 transition-colors duration-300">
       <div className="px-6 pb-4 shrink-0 max-w-[85%] mx-auto w-full">
-        {/* Added pr-2 to prevent italic text clipping */}
         <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm pr-2">
           Operative Profile
         </h2>
@@ -246,7 +245,7 @@ const CreateProfile = () => {
                       avatarFile
                         ? URL.createObjectURL(avatarFile)
                         : formData.avatar ||
-                          "https://via.placeholder.com/200x200"
+                          "https://placehold.co/200x200"
                     }
                     alt="Avatar"
                     className="w-full h-full rounded-full object-cover border-4 border-white dark:border-slate-700 shadow-lg"
@@ -259,10 +258,19 @@ const CreateProfile = () => {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      onChange={(e) => setAvatarFile(e.target.files[0])}
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast.error("Image too large. Max 2MB allowed.");
+                            return;
+                          }
+                          setAvatarFile(file);
+                        }
+                      }}
                     />
                   </label>
-                  <p className="text-[12px] text-slate-400 mt-2 font-medium">
+                  <p className="text-[10px] text-slate-400 mt-2 font-medium">
                     Max 2MB (JPG/PNG)
                   </p>
                 </div>
@@ -361,7 +369,7 @@ const CreateProfile = () => {
                         >
                           <img
                             src={
-                              g.cover?.url || "https://via.placeholder.com/40"
+                              g.cover?.url || "https://placehold.co/40"
                             }
                             alt=""
                             className="w-8 h-10 object-cover rounded bg-slate-200"
@@ -437,8 +445,6 @@ const CreateProfile = () => {
                   />
                   {charResults.length > 0 && (
                     <div
-                      // CHANGED: top-full mt-2 -> bottom-full mb-2
-                      // This forces the dropdown to render upwards, preventing clipping in the scrollable container.
                       className={`absolute left-0 right-0 bottom-full mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
                     >
                       {charResults.map((c) => (
@@ -450,7 +456,7 @@ const CreateProfile = () => {
                           <img
                             src={
                               c.mug_shot?.url ||
-                              "https://via.placeholder.com/30"
+                              "https://placehold.co/30"
                             }
                             alt=""
                             className="w-8 h-8 rounded-full object-cover"
