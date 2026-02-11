@@ -653,7 +653,7 @@ const Profile = () => {
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
           <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm">
-            Operative Profile
+            User Profile
           </h2>
           <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
             Identity & Archives
