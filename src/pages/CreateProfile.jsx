@@ -217,8 +217,9 @@ const CreateProfile = () => {
   return (
     <div className="h-screen w-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 overflow-hidden flex flex-col pt-12 pb-28 transition-colors duration-300">
       <div className="px-6 pb-4 shrink-0 max-w-[85%] mx-auto w-full">
+        {/* Added pr-2 to prevent italic text clipping */}
         <h2 className="text-3xl md:text-5xl font-black italic tracking-tighter uppercase text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 drop-shadow-sm pr-2">
-          Create Operative Profile
+          Operative Profile
         </h2>
         <p className="text-slate-500 text-xs sm:text-sm font-semibold tracking-wide uppercase mt-1">
           Configure Your Identity & Arsenal
@@ -332,7 +333,7 @@ const CreateProfile = () => {
           <div className="bg-white dark:bg-slate-900/50 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-sm flex flex-col overflow-hidden">
             <div className="p-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
               <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest">
-                Arsenal Module (You can only add 3 games on the free plan)
+                Arsenal Module
               </h3>
             </div>
 
@@ -424,10 +425,7 @@ const CreateProfile = () => {
               </div>
 
               <div className="space-y-4 pt-6 border-t border-slate-100 dark:border-slate-800">
-                {/* FIX: Increased Z-Index to 50 to sit above other elements.
-                  The dropdown below will now render upwards (bottom-full) to avoid clipping.
-                */}
-                <div className="relative z-50">
+                <div className="relative z-10">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <SearchIcon />
                   </div>
@@ -439,9 +437,8 @@ const CreateProfile = () => {
                   />
                   {charResults.length > 0 && (
                     <div
-                      // FIX: Changed 'top-full mt-2' to 'bottom-full mb-2'
-                      // This forces the dropdown to open UPWARDS, preventing it from being
-                      // cut off by the overflow-hidden boundary of the parent container.
+                      // CHANGED: top-full mt-2 -> bottom-full mb-2
+                      // This forces the dropdown to render upwards, preventing clipping in the scrollable container.
                       className={`absolute left-0 right-0 bottom-full mb-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl max-h-48 overflow-y-auto shadow-2xl ${scrollbarStyles}`}
                     >
                       {charResults.map((c) => (
